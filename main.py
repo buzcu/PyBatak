@@ -1,6 +1,7 @@
 import random
 from collections import deque
 from mcts import mcts
+from copy import copy, deepcopy
 
 
 class Tree(object):
@@ -128,6 +129,27 @@ class Player:
         self.karos.sort(key=self.get_card_value)
         self.sineks.sort(key=self.get_card_value)
 
+    def list_playable_cards(self, cardsontable, koz, kozciktimi, round, bidwinner):
+        #temp_playa = Player()
+        temp_playa = deepcopy(self)
+        temp_list = []
+        for cards in range(len(temp_playa.cards)):
+            temp_list.append(temp_playa.play_card(cardsontable, koz, kozciktimi, round))
+        for cards in temp_list:
+            if self.is_play_legal(cards, cardsontable, koz, kozciktimi, bidwinner) == False:
+                temp_list.remove(cards)
+        return temp_list
+
+    def is_play_legal(self, card, cardsontable, koz, kozciktimi, bidwinner):
+        if kozciktimi == 1 and len(cardsontable) == 0:
+            return True
+        if self == bidwinner and len(cardsontable) == 0:
+            return True
+        if self != bidwinner and card.color == koz:
+            if cardsontable[0].color == #todo
+
+
+
     def play_card(self, cardsontable, koz, kozciktimi, round):
         self.order_cards()
         if round == 0:
@@ -173,7 +195,16 @@ class Player:
         else:
             if len(cardsontable) == 0:#nth game first card
                 card_to_play = random.choice(self.cards)#this means we are first to play
-                while card_to_play.color == koz and kozciktimi == 0:
+                card_species = 0
+                if len(self.macas) > 0:
+                    card_species = card_species+1
+                if len(self.kupas) > 0:
+                    card_species = card_species+1
+                if len(self.karos) > 0:
+                    card_species = card_species+1
+                if len(self.sineks) > 0:
+                    card_species = card_species+1
+                while card_to_play.color == koz and kozciktimi == 0 and (card_species > 1):
                     card_to_play = random.choice(self.cards)
                 self.cards.remove(card_to_play)
                 return card_to_play
@@ -312,6 +343,9 @@ class Game:
         self.roundwinner = -1
         self.winningcard = Card('0', '')
         for x in range(4):
+            print("players card options are as follows: \n")
+            print(self.players[self.turn[0]].list_playable_cards(cards_on_table, self.currentpick, self.kozciktimi, self.round, self.players[self.bidwinner]))
+            print("\n----------")
             played_card = self.players[self.turn[0]].play_card(cards_on_table, self.currentpick, self.kozciktimi, self.round)
             if self.roundwinner == -1:
                 self.roundwinner = self.turn[0]
@@ -340,25 +374,20 @@ class Game:
             print(card.value, card.color)
         print("Round winner: " + self.players[self.roundwinner].name)
         self.players[self.roundwinner].score += 1
+        while self.players[self.roundwinner] != self.players[self.turn[0]]:
+            self.turn.rotate(-1)
 
 
 if __name__ == '__main__':
 
     mcts = mcts(timeLimit=1000)
     mygame = Game()
-    for player in mygame.players:
-        print(player.name)
-        print(len(player.cards))
-        print(len(player.woncards))
-        player.bid()
-        print('\n--------------\n')
-
     mygame.bidding()
     for i in range(13):
         mygame.gameround()
         print(len(mygame.players[0].cards))
 
-    #bestAction = mcts.search(initialState=initialState)
+
     #for cart in gamblers[0].cards:
     #    cart.print()
 

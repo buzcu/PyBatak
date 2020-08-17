@@ -120,6 +120,17 @@ class Player:
     def get_card_value(self, card):
         return self.cardvalue[card.value]
 
+    def print_player_cards(self):
+        self.order_cards()
+        for number, card in enumerate(self.kupas):
+            print(card)
+        for number, card in enumerate(self.macas):
+            print(card)
+        for number, card in enumerate(self.karos):
+            print(card)
+        for number, card in enumerate(self.sineks):
+            print(card)
+
     def order_cards(self):
         self.cards.sort(key=self.get_card_value)
         self.kupas = []
@@ -144,11 +155,11 @@ class Player:
         #temp_playa = Player()
         temp_playa = deepcopy(self)
         temp_list = []
-        for cards in range(len(temp_playa.cards)):
-            temp_list.append(temp_playa.play_card(cardsontable, koz, kozciktimi, round))
-        for cards in temp_list:
-            if self.is_play_legal(cards, cardsontable, koz, kozciktimi, bidwinner) == False:
-                temp_list.remove(cards)
+        #for cards in range(len(temp_playa.cards)):
+        #    temp_list.append(temp_playa.play_card(cardsontable, koz, kozciktimi, round))
+        for cards in self.cards:
+            if self.is_play_legal(cards, cardsontable, koz, kozciktimi, bidwinner) == True:
+                temp_list.append(cards)
         return temp_list
 
     def is_play_legal(self, card, cardsontable, koz, kozciktimi, bidwinner):
@@ -162,24 +173,45 @@ class Player:
         elif koz == "sinek":
             player_koz_number = len(self.sineks)
 
-        player_main_card_number = 0
-        if len(cardsontable)>0:
-            main_serie = cardsontable[0].color
-            if main_serie == "kupa":
-                player_main_card_number = len(self.kupas)
-            elif main_serie == "maça":
-                player_main_card_number = len(self.macas)
-            elif main_serie == "karo":
-                player_main_card_number = len(self.karos)
-            elif main_serie == "sinek":
-                player_main_card_number = len(self.sineks)
+        player_main_color_count = 0
+        if len(cardsontable) > 0:
+            main_color = cardsontable[0].color
+            if main_color == "kupa":
+                player_main_color_count = len(self.kupas)
+            elif main_color == "maça":
+                player_main_color_count = len(self.macas)
+            elif main_color == "karo":
+                player_main_color_count = len(self.karos)
+            elif main_color == "sinek":
+                player_main_color_count = len(self.sineks)
 
         if len(cardsontable) == 0:
             if kozciktimi == 1 or (kozciktimi == 0 and card.color != koz):
                 return True
-        elif cardsontable[0].color == card.color:
+        elif cardsontable[0].color == card.color and self.get_card_value(cardsontable[len(cardsontable)-1]) < self.get_card_value(card):
             return True
-        elif player_main_card_number == 0 and (card.color == koz or player_koz_number == 0):
+        elif cardsontable[0].color == card.color and self.get_card_value(cardsontable[len(cardsontable)-1]) > self.get_card_value(card):
+            if cardsontable[0].color == "kupa":
+                for cardd in self.kupas:
+                    if self.get_card_value(cardd)>self.get_card_value(cardsontable[len(cardsontable)-1]):
+                        return False
+                return True
+            elif cardsontable[0].color == "maça":
+                for cardd in self.macas:
+                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+                        return False
+                return True
+            elif cardsontable[0].color == "karo":
+                for cardd in self.karos:
+                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+                        return False
+                return True
+            elif cardsontable[0].color == "sinek":
+                for cardd in self.sineks:
+                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+                        return False
+                return True
+        elif player_main_color_count == 0 and (card.color == koz or player_koz_number == 0):
             return True
         return False
 
@@ -360,9 +392,10 @@ class Game:
         if bids[3][0]>bids[max_bid][0]:
             max_bid=3
         self.currentpick=bids[max_bid][1]
-        print(bids)
+        #print(bids)
         for num, bidd in enumerate(bids):
             print(str(bidd)+' '+self.players[num].name)
+            self.players[num].print_player_cards()
         print('Koz: ' + str(bids[max_bid][1]))
         self.currentpick = str(bids[max_bid][1])
         self.bidwinner = max_bid

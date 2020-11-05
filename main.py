@@ -56,7 +56,7 @@ class Card:
 
     def print(self):
         print(self.color, self.value)
-        if self.color=='kupa':
+        if self.color=='heart':
             print('''
  _____
 |'''+self.value+'''_ _ |
@@ -65,7 +65,7 @@ class Card:
 |  .  |
 |____'''+'♥'+'''|
 ''')
-        elif self.color=='sinek':
+        elif self.color=='club':
             print("""
  _____
 |"""+self.value+""" _  |
@@ -73,7 +73,7 @@ class Card:
 |(_'_)|
 |  |  |
 |____"""+'♣'+"""|""")
-        elif self.color=='karo':
+        elif self.color=='diamond':
             print("""
  _____
 |"""+self.value+""" ^  |
@@ -82,7 +82,7 @@ class Card:
 |  .  |
 |____"""+'♦'+"""|
 """)
-        elif self.color=='maça':
+        elif self.color=='spade':
             print("""
  _____
 |"""+self.value+""" .  |
@@ -102,251 +102,433 @@ class Player:
         self.cards = []
         self.woncards = []
         self.score = 0
-        self.kupas = []
-        self.karos = []
-        self.sineks = []
-        self.macas = []
+        self.hearts = []
+        self.diamonds = []
+        self.clubs = []
+        self.spades = []
 
     def __init__(self, name, cardss):
         self.name = name
         self.cards = cardss
         self.woncards = []
         self.score = 0
-        self.kupas = []
-        self.karos = []
-        self.sineks = []
-        self.macas = []
+        self.hearts = []
+        self.diamonds = []
+        self.clubs = []
+        self.spades = []
 
     def get_card_value(self, card):
         return self.cardvalue[card.value]
 
     def print_player_cards(self):
         self.order_cards()
-        for number, card in enumerate(self.kupas):
+        for number, card in enumerate(self.hearts):
             print(card)
-        for number, card in enumerate(self.macas):
+        for number, card in enumerate(self.spades):
             print(card)
-        for number, card in enumerate(self.karos):
+        for number, card in enumerate(self.diamonds):
             print(card)
-        for number, card in enumerate(self.sineks):
+        for number, card in enumerate(self.clubs):
             print(card)
 
     def order_cards(self):
         self.cards.sort(key=self.get_card_value)
-        self.kupas = []
-        self.karos = []
-        self.sineks = []
-        self.macas = []
+        self.hearts = []
+        self.diamonds = []
+        self.clubs = []
+        self.spades = []
         for card in self.cards:
-            if card.color == 'kupa':
-                self.kupas.append(card)
-            elif card.color == 'maça':
-                self.macas.append(card)
-            elif card.color == 'karo':
-                self.karos.append(card)
+            if card.color == 'heart':
+                self.hearts.append(card)
+            elif card.color == 'spade':
+                self.spades.append(card)
+            elif card.color == 'diamond':
+                self.diamonds.append(card)
             else:
-                self.sineks.append(card)
-        self.kupas.sort(key=self.get_card_value)
-        self.macas.sort(key=self.get_card_value)
-        self.karos.sort(key=self.get_card_value)
-        self.sineks.sort(key=self.get_card_value)
+                self.clubs.append(card)
+        self.hearts.sort(key=self.get_card_value)
+        self.spades.sort(key=self.get_card_value)
+        self.diamonds.sort(key=self.get_card_value)
+        self.clubs.sort(key=self.get_card_value)
 
-    def list_playable_cards(self, cardsontable, koz, kozciktimi, round, bidwinner):
+    def list_playable_cards(self, cards_on_table, trump, is_trump_enabled, round, bidwinner):
         #temp_playa = Player()
         temp_playa = deepcopy(self)
         temp_list = []
         #for cards in range(len(temp_playa.cards)):
         #    temp_list.append(temp_playa.play_card(cardsontable, koz, kozciktimi, round))
         for cards in self.cards:
-            if self.is_play_legal(cards, cardsontable, koz, kozciktimi, bidwinner) == True:
+            if self.is_play_legal(cards, cards_on_table, trump, is_trump_enabled, bidwinner) == True:
                 temp_list.append(cards)
         return temp_list
 
-    def is_play_legal(self, card, cardsontable, koz, kozciktimi, bidwinner):
-        player_koz_number = 0
-        if koz == "kupa":
-            player_koz_number = len(self.kupas)
-        elif koz == "maça":
-            player_koz_number = len(self.macas)
-        elif koz == "karo":
-            player_koz_number = len(self.karos)
-        elif koz == "sinek":
-            player_koz_number = len(self.sineks)
+    def is_play_legal(self, card, cards_on_table, trump, is_trump_enabled, bidwinner):
+        player_trump_card_number = 0
+        if trump == "heart":
+            player_trump_card_number = len(self.hearts)
+        elif trump == "spade":
+            player_trump_card_number = len(self.spades)
+        elif trump == "diamond":
+            player_trump_card_number = len(self.diamonds)
+        elif trump == "club":
+            player_trump_card_number = len(self.clubs)
 
         player_main_color_count = 0
-        if len(cardsontable) > 0:
-            main_color = cardsontable[0].color
-            if main_color == "kupa":
-                player_main_color_count = len(self.kupas)
-            elif main_color == "maça":
-                player_main_color_count = len(self.macas)
-            elif main_color == "karo":
-                player_main_color_count = len(self.karos)
-            elif main_color == "sinek":
-                player_main_color_count = len(self.sineks)
+        if len(cards_on_table) > 0:
+            main_color = cards_on_table[0].color
+            if main_color == "heart":
+                player_main_color_count = len(self.hearts)
+            elif main_color == "spade":
+                player_main_color_count = len(self.spades)
+            elif main_color == "diamond":
+                player_main_color_count = len(self.diamonds)
+            elif main_color == "club":
+                player_main_color_count = len(self.clubs)
 
-        if len(cardsontable) == 0:
-            if kozciktimi == 1 or (kozciktimi == 0 and card.color != koz):
+        if len(cards_on_table) == 0:
+            if is_trump_enabled == 1 or (is_trump_enabled == 0 and card.color != trump):
                 return True
-        elif cardsontable[0].color == card.color and self.get_card_value(cardsontable[len(cardsontable)-1]) < self.get_card_value(card):
+        elif cards_on_table[0].color == card.color and self.get_card_value(cards_on_table[len(cards_on_table) - 1]) < self.get_card_value(card):
             return True
-        elif cardsontable[0].color == card.color and self.get_card_value(cardsontable[len(cardsontable)-1]) > self.get_card_value(card):
-            if cardsontable[0].color == "kupa":
-                for cardd in self.kupas:
-                    if self.get_card_value(cardd)>self.get_card_value(cardsontable[len(cardsontable)-1]):
+        elif cards_on_table[0].color == card.color and self.get_card_value(cards_on_table[len(cards_on_table) - 1]) > self.get_card_value(card):
+            if cards_on_table[0].color == "heart":
+                for cardd in self.hearts:
+                    if self.get_card_value(cardd)>self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
                         return False
                 return True
-            elif cardsontable[0].color == "maça":
-                for cardd in self.macas:
-                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+            elif cards_on_table[0].color == "spade":
+                for cardd in self.spades:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
                         return False
                 return True
-            elif cardsontable[0].color == "karo":
-                for cardd in self.karos:
-                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+            elif cards_on_table[0].color == "diamond":
+                for cardd in self.diamonds:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
                         return False
                 return True
-            elif cardsontable[0].color == "sinek":
-                for cardd in self.sineks:
-                    if self.get_card_value(cardd) > self.get_card_value(cardsontable[len(cardsontable) - 1]):
+            elif cards_on_table[0].color == "club":
+                for cardd in self.clubs:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
                         return False
                 return True
-        elif player_main_color_count == 0 and (card.color == koz or player_koz_number == 0):
+        elif player_main_color_count == 0 and (card.color == trump or player_trump_card_number == 0):
             return True
         return False
 
-    def play_card(self, cardsontable, koz, kozciktimi, round):
+    def play_card(self, cardsontable, trump, is_trump_enabled, round):
         self.order_cards()
         if round == 0:
             if len(cardsontable) == 0:  # first game first card
                 card_to_play = random.choice(self.cards)  # this means we are first to play
-                while card_to_play.color == koz:
+                while card_to_play.color == trump:
                     card_to_play = random.choice(self.cards)
                 self.cards.remove(card_to_play)
                 return card_to_play
             else:
-                if (cardsontable[0].color == 'kupa' and len(self.kupas) == 0) or (cardsontable[0].color == 'maça' and len(self.macas) == 0) or (cardsontable[0].color == 'sinek' and len(self.sineks) == 0) or (cardsontable[0].color == 'karo' and len(self.karos) == 0): # this means we dont have same club therefore we should play koz
-                    if koz == 'maça':
-                        if len(self.macas) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.macas)
+                if (cardsontable[0].color == 'heart' and len(self.hearts) == 0) or (cardsontable[0].color == 'spade' and len(self.spades) == 0) or (cardsontable[0].color == 'club' and len(self.clubs) == 0) or (cardsontable[0].color == 'diamond' and len(self.diamonds) == 0): # this means we dont have same suit therefore we should play trump
+                    if trump == 'spade':
+                        if len(self.spades) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.spades)
                         else:
                             card_to_play = self.cards[0] # if we dont have koz it doesnt matter we will lose anyways so use smallest possible card
-                    elif koz == 'kupa':
-                        if len(self.kupas) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.kupas)
+                    elif trump == 'heart':
+                        if len(self.hearts) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.hearts) #todo: fix ramdom choice implement an algorithm
                         else:
-                            card_to_play =self.cards[0] # if we dont have koz it doesnt matter we will lose anyways
-                    elif koz == 'sinek':
-                        if len(self.sineks) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.sineks)
+                            card_to_play =self.cards[0] # if we dont have trump it doesnt matter we will lose anyways
+                    elif trump == 'club':
+                        if len(self.clubs) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.clubs)
                         else:
-                            card_to_play = self.cards[0] # if we dont have koz it doesnt matter we will lose anyways
-                    elif koz == 'karo':
-                        if len(self.karos) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.karos)
+                            card_to_play = self.cards[0] # if we dont have trump it doesnt matter we will lose anyways
+                    elif trump == 'diamond':
+                        if len(self.diamonds) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.diamonds)
                         else:
-                            card_to_play = self.cards[0] # if we dont have koz it doesnt matter we will lose anyways
+                            card_to_play = self.cards[0] # if we dont have trump it doesnt matter we will lose anyways
                 else:
-                    if cardsontable[0].color == 'kupa':
-                        card_to_play = random.choice(self.kupas)
-                    elif cardsontable[0].color == 'karo':
-                        card_to_play = random.choice(self.karos)
-                    elif cardsontable[0].color == 'maça':
-                        card_to_play = random.choice(self.macas)
-                    elif cardsontable[0].color == 'sinek':
-                        card_to_play = random.choice(self.sineks)
+                    if cardsontable[0].color == 'heart':
+                        card_to_play = random.choice(self.hearts)
+                    elif cardsontable[0].color == 'diamond':
+                        card_to_play = random.choice(self.diamonds)
+                    elif cardsontable[0].color == 'spade':
+                        card_to_play = random.choice(self.spades)
+                    elif cardsontable[0].color == 'club':
+                        card_to_play = random.choice(self.clubs)
                 self.cards.remove(card_to_play)
                 return card_to_play
         else:
             if len(cardsontable) == 0:#nth game first card
                 card_to_play = random.choice(self.cards)#this means we are first to play
-                card_species = 0
-                if len(self.macas) > 0:
-                    card_species = card_species+1
-                if len(self.kupas) > 0:
-                    card_species = card_species+1
-                if len(self.karos) > 0:
-                    card_species = card_species+1
-                if len(self.sineks) > 0:
-                    card_species = card_species+1
-                while card_to_play.color == koz and kozciktimi == 0 and (card_species > 1):
+                card_suits = 0
+                if len(self.spades) > 0:
+                    card_suits = card_suits+1
+                if len(self.hearts) > 0:
+                    card_suits = card_suits+1
+                if len(self.diamonds) > 0:
+                    card_suits = card_suits+1
+                if len(self.clubs) > 0:
+                    card_suits = card_suits+1
+                while card_to_play.color == trump and is_trump_enabled == 0 and (card_suits > 1):
                     card_to_play = random.choice(self.cards)
                 self.cards.remove(card_to_play)
                 return card_to_play
             else:
-                card_to_play = random.choice(self.cards)  # ilk game other cards
-                if (cardsontable[0].color == 'kupa' and len(self.kupas) == 0) or (cardsontable[0].color == 'maça' and len(self.macas) == 0) or (cardsontable[0].color == 'sinek' and len(self.sineks) == 0) or (cardsontable[0].color == 'karo' and len(self.karos) == 0): # this means we dont have same club therefore we should play koz
-                    if koz == 'maça':
-                        if len(self.macas) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.macas)
+                card_to_play = random.choice(self.cards)  # first game round, not first card
+                if (cardsontable[0].color == 'heart' and len(self.hearts) == 0) or (cardsontable[0].color == 'spade' and len(self.spades) == 0) or (cardsontable[0].color == 'club' and len(self.clubs) == 0) or (cardsontable[0].color == 'diamond' and len(self.diamonds) == 0): # this means we dont have same suit therefore we should play trump
+                    if trump == 'spade':
+                        if len(self.spades) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.spades)
                         else:
-                            card_to_play = random.choice(self.cards) # if we dont have koz it doesnt matter we will lose anyways
-                    elif koz == 'kupa':
-                        if len(self.kupas) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.kupas)
+                            card_to_play = random.choice(self.cards) # if we dont have trump it doesnt matter we will lose anyways
+                    elif trump == 'heart':
+                        if len(self.hearts) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.hearts)
                         else:
-                            card_to_play = random.choice(self.cards) # if we dont have koz it doesnt matter we will lose anyways
-                    elif koz == 'sinek':
-                        if len(self.sineks) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.sineks)
+                            card_to_play = random.choice(self.cards) # if we dont have trump it doesnt matter we will lose anyways
+                    elif trump == 'club':
+                        if len(self.clubs) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.clubs)
                         else:
-                            card_to_play = random.choice(self.cards) # if we dont have koz it doesnt matter we will lose anyways
-                    elif koz == 'karo':
-                        if len(self.karos) > 0: # check if we have any koz
-                            card_to_play = random.choice(self.karos)
+                            card_to_play = random.choice(self.cards) # if we dont have trump it doesnt matter we will lose anyways
+                    elif trump == 'diamond':
+                        if len(self.diamonds) > 0: # check if we have any trump
+                            card_to_play = random.choice(self.diamonds)
                         else:
-                            card_to_play = random.choice(self.cards) # if we dont have koz it doesnt matter we will lose anyways
+                            card_to_play = random.choice(self.cards) # if we dont have trump it doesnt matter we will lose anyways
                 else:
-                    if cardsontable[0].color == 'kupa':
-                        card_to_play = random.choice(self.kupas)
-                    elif cardsontable[0].color == 'karo':
-                        card_to_play = random.choice(self.karos)
-                    elif cardsontable[0].color == 'maça':
-                        card_to_play = random.choice(self.macas)
-                    elif cardsontable[0].color == 'sinek':
-                        card_to_play = random.choice(self.sineks)
+                    if cardsontable[0].color == 'heart':
+                        card_to_play = random.choice(self.hearts)
+                    elif cardsontable[0].color == 'diamond':
+                        card_to_play = random.choice(self.diamonds)
+                    elif cardsontable[0].color == 'spade':
+                        card_to_play = random.choice(self.spades)
+                    elif cardsontable[0].color == 'club':
+                        card_to_play = random.choice(self.clubs)
                 self.cards.remove(card_to_play)
                 return card_to_play
 
     def bid(self):
         cardscores = [0, 0, 0, 0]
-        cardlistkupa = []
-        cardlistsinek = []
-        cardlistmaca = []
-        cardlistkaro = []
-        chosenone = 'kupa'
+        card_list_hearts = []
+        card_list_clubs = []
+        card_list_spades = []
+        card_list_diamonds = []
+        chosen_one = 'heart'
         for card in self.cards:
             #print('player cards: '+card.color+' '+card.value)
-            if card.color == 'kupa':
-                cardlistkupa.append(card.value)
+            if card.color == 'heart':
+                card_list_hearts.append(card.value)
                 cardscores[0] += card.cardvalue[card.value]
-            elif card.color == 'sinek':
-                cardlistsinek.append(card.value)
+            elif card.color == 'club':
+                card_list_clubs.append(card.value)
                 cardscores[1] += card.cardvalue[card.value]
-            elif card.color == 'karo':
-                cardlistkaro.append(card.value)
+            elif card.color == 'diamond':
+                card_list_diamonds.append(card.value)
                 cardscores[2] += card.cardvalue[card.value]
-            elif card.color == 'maça':
-                cardlistmaca.append(card.value)
+            elif card.color == 'spade':
+                card_list_spades.append(card.value)
                 cardscores[3] += card.cardvalue[card.value]
         if cardscores[0]==max(cardscores):
-            chosenone = 'kupa'
+            chosen_one = 'heart'
         if cardscores[1]==max(cardscores):
-            chosenone = 'sinek'
+            chosen_one = 'club'
         if cardscores[2]==max(cardscores):
-            chosenone = 'karo'
+            chosen_one = 'diamond'
         if cardscores[3]==max(cardscores):
-            chosenone = 'maça'
+            chosen_one = 'spade'
 
-        return [round(max(cardscores)/10), chosenone]
+        return [round(max(cardscores)/10), chosen_one]
 
+
+class Human(Player):
+    cardvalue = {'A': 20, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 12, 'J': 14, 'Q': 16,
+                 'K': 18, '0': 0}
+
+    def __init__(self):
+        super().__init__()
+        self.name = input('Name: ')
+
+    def __init__(self, name, cardss):
+        super(Human, self).__init__(name, cardss)
+        self.name = input('Name: ')
+
+    def get_card_value(self, card):
+        return self.cardvalue[card.value]
+
+    def print_player_cards(self):
+        self.order_cards()
+        for number, card in enumerate(self.hearts):
+            print(card)
+        for number, card in enumerate(self.spades):
+            print(card)
+        for number, card in enumerate(self.diamonds):
+            print(card)
+        for number, card in enumerate(self.clubs):
+            print(card)
+
+    def order_cards(self):
+        self.cards.sort(key=self.get_card_value)
+        self.hearts = []
+        self.diamonds = []
+        self.clubs = []
+        self.spades = []
+        for card in self.cards:
+            if card.color == 'heart':
+                self.hearts.append(card)
+            elif card.color == 'spade':
+                self.spades.append(card)
+            elif card.color == 'diamond':
+                self.diamonds.append(card)
+            else:
+                self.clubs.append(card)
+        self.hearts.sort(key=self.get_card_value)
+        self.spades.sort(key=self.get_card_value)
+        self.diamonds.sort(key=self.get_card_value)
+        self.clubs.sort(key=self.get_card_value)
+
+    def list_playable_cards(self, cards_on_table, trump, is_trump_enabled, round, bidwinner):
+        # temp_playa = Player()
+        temp_playa = deepcopy(self)
+        temp_list = []
+        # for cards in range(len(temp_playa.cards)):
+        #    temp_list.append(temp_playa.play_card(cardsontable, koz, kozciktimi, round))
+        for cards in self.cards:
+            if self.is_play_legal(cards, cards_on_table, trump, is_trump_enabled, bidwinner) == True:
+                temp_list.append(cards)
+        return temp_list
+
+    def is_play_legal(self, card, cards_on_table, trump, is_trump_enabled, bidwinner):
+        player_trump_card_number = 0
+        if trump == "heart":
+            player_trump_card_number = len(self.hearts)
+        elif trump == "spade":
+            player_trump_card_number = len(self.spades)
+        elif trump == "diamond":
+            player_trump_card_number = len(self.diamonds)
+        elif trump == "club":
+            player_trump_card_number = len(self.clubs)
+
+        player_main_color_count = 0
+        if len(cards_on_table) > 0:
+            main_color = cards_on_table[0].color
+            if main_color == "heart":
+                player_main_color_count = len(self.hearts)
+            elif main_color == "spade":
+                player_main_color_count = len(self.spades)
+            elif main_color == "diamond":
+                player_main_color_count = len(self.diamonds)
+            elif main_color == "club":
+                player_main_color_count = len(self.clubs)
+
+        if len(cards_on_table) == 0:
+            if is_trump_enabled == 1 or (is_trump_enabled == 0 and card.color != trump):
+                return True
+        elif cards_on_table[0].color == card.color and self.get_card_value(
+                cards_on_table[len(cards_on_table) - 1]) < self.get_card_value(card):
+            return True
+        elif cards_on_table[0].color == card.color and self.get_card_value(
+                cards_on_table[len(cards_on_table) - 1]) > self.get_card_value(card):
+            if cards_on_table[0].color == "heart":
+                for cardd in self.hearts:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
+                        return False
+                return True
+            elif cards_on_table[0].color == "spade":
+                for cardd in self.spades:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
+                        return False
+                return True
+            elif cards_on_table[0].color == "diamond":
+                for cardd in self.diamonds:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
+                        return False
+                return True
+            elif cards_on_table[0].color == "club":
+                for cardd in self.clubs:
+                    if self.get_card_value(cardd) > self.get_card_value(cards_on_table[len(cards_on_table) - 1]):
+                        return False
+                return True
+        elif player_main_color_count == 0 and (card.color == trump or player_trump_card_number == 0):
+            return True
+        return False
+
+    def play_card(self, cards_on_table, trump, is_trump_enabled, round):
+        self.order_cards()
+        print('Cards on table:')
+        for card in cards_on_table:
+            print(card)
+        print('\nYour cards:')
+        self.print_player_cards()
+        serie = int(input('\nKupa -> 1\nSinek -> 2\nKaro -> 3\nMaca -> 4\nChosen card serie (1-4): '))
+        print('\n')
+        if serie == 1:
+            chosen_one = 'heart'
+            for i, cards in enumerate(self.hearts):
+                print(str(i) +' -> ' + str(cards))
+        elif serie == 2:
+            chosen_one = 'club'
+            for i, cards in enumerate(self.clubs):
+                print(str(i) +' -> ' + str(cards))
+        elif serie == 3:
+            chosen_one = 'diamond'
+            for i, cards in enumerate(self.diamonds):
+                print(str(i) +' -> ' + str(cards))
+        elif serie == 4:
+            chosen_one = 'spade'
+            for i, cards in enumerate(self.spades):
+                print(str(i) +' -> ' + str(cards))
+
+        #todo: write card selection part
+        #self.cards.remove(card_to_play)
+        return self.cards[0]
+
+    def bid(self):
+        cardscores = [0, 0, 0, 0]
+        card_list_hearts = []
+        card_list_clubs = []
+        card_list_spades = []
+        card_list_diamonds = []
+        chosen_suit = 'heart'
+        for card in self.cards:
+            print('player cards: '+card.color+' '+card.value)
+            if card.color == 'heart':
+                card_list_hearts.append(card.value)
+                cardscores[0] += card.cardvalue[card.value]
+            elif card.color == 'club':
+                card_list_clubs.append(card.value)
+                cardscores[1] += card.cardvalue[card.value]
+            elif card.color == 'diamond':
+                card_list_diamonds.append(card.value)
+                cardscores[2] += card.cardvalue[card.value]
+            elif card.color == 'spade':
+                card_list_spades.append(card.value)
+                cardscores[3] += card.cardvalue[card.value]
+        print('\nHearts point total: ' + str(cardscores[0]))
+        print('\nClubs point total: ' + str(cardscores[1]))
+        print('\nDiamonds point total: ' + str(cardscores[2]))
+        print('\nSpades point total: ' + str(cardscores[3]))
+        bid_value = int(input('Bid: '))
+        bid_type = int(input('\nHeart -> 1\nClub -> 2\nDiamond -> 3\nSpade -> 4\nChosen card suit (1-4): '))
+        if bid_type == 1:
+            chosen_suit = 'heart'
+        elif bid_type == 2:
+            chosen_suit = 'club'
+        elif bid_type == 3:
+            chosen_suit = 'diamond'
+        elif bid_type == 4:
+            chosen_suit = 'spade'
+        else:
+            print('You have entered invalid answer. you will have heart as default chosen card suit.')
+
+        return [bid_value, chosen_suit]
 
 
 class Game:
-    colors = ['kupa', 'karo', 'sinek', 'maça']
+    colors = ['heart', 'diamond', 'club', 'spade']
     lastnames = ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor',
                  'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez',
-                 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Collins', 'Edwards', 'Evans', 'PArker',
+                 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Collins', 'Edwards', 'Evans', 'Parker',
                  'Campbell', 'Philips', 'Turner', 'Roberts', 'Perez', 'Mitchell', 'Carter', 'Nelson', 'Gonzales',
                  'Richardson', 'Cox', 'Howard', 'Ward', 'Torres', 'Peterson', 'Gray', 'Ramirez', 'James', 'Watson',
                  'Brooks', 'Kelly', 'Sanders', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons']
@@ -363,7 +545,7 @@ class Game:
         self.currentpick = ''
         self.bidwinner = -1
         self.gamecount = 0
-        self.kozciktimi = 0
+        self.is_trump_enabled = 0
         self.round = 0
         self.winner = -1
         self.roundwinner = -1
@@ -371,8 +553,13 @@ class Game:
         self.deck = [Card(value, color) for value in self.values for color in self.colors]
         random.shuffle(self.deck)
         self.playerss = self.partition(self.deck, 4)
-        for self.parts in self.playerss:
-            self.players.append(Player("".join(random.choice(self.firstnames)+" "+random.choice(self.lastnames)), self.parts))
+        for player_number, self.parts in enumerate(self.playerss):
+            # 3 ai player classes and 1 human class
+            if player_number < 3:
+                self.players.append(Player("".join(random.choice(self.firstnames)+" "+random.choice(self.lastnames)), self.parts))
+            else:
+                self.players.append(
+                    Human("".join(random.choice(self.firstnames) + " " + random.choice(self.lastnames)), self.parts))
 
     def partition(self, lst, n):
         division = len(lst) / n
@@ -383,26 +570,26 @@ class Game:
         bids.append(self.players[0].bid())
         max_bid = 0
         bids.append(self.players[1].bid())
-        if bids[1][0]>bids[0][0]:
-            max_bid=1
+        if bids[1][0] > bids[0][0]:
+            max_bid = 1
         bids.append(self.players[2].bid())
-        if bids[2][0]>bids[max_bid][0]:
-            max_bid=2
+        if bids[2][0] > bids[max_bid][0]:
+            max_bid = 2
         bids.append(self.players[3].bid())
-        if bids[3][0]>bids[max_bid][0]:
-            max_bid=3
+        if bids[3][0] > bids[max_bid][0]:
+            max_bid = 3
         self.currentpick=bids[max_bid][1]
-        #print(bids)
+        # print(bids)
         for num, bidd in enumerate(bids):
             print(str(bidd)+' '+self.players[num].name)
             self.players[num].print_player_cards()
-        print('Koz: ' + str(bids[max_bid][1]))
+        print('Trump: ' + str(bids[max_bid][1]))
         self.currentpick = str(bids[max_bid][1])
         self.bidwinner = max_bid
         self.turn.rotate(-1*max_bid)
         #print(self.turn[0])
         #print(max_bid)
-        print('Kozu alan oyuncu : ' + self.players[max_bid].name)
+        print('Player who determined the trump: ' + self.players[max_bid].name)
 
     def gameround(self):
         cards_on_table = []
@@ -412,9 +599,9 @@ class Game:
         self.winningcard = Card('0', '')
         for x in range(4):
             print("players card options are as follows: \n")
-            print(self.players[self.turn[0]].list_playable_cards(cards_on_table, self.currentpick, self.kozciktimi, self.round, self.players[self.bidwinner]))
+            print(self.players[self.turn[0]].list_playable_cards(cards_on_table, self.currentpick, self.is_trump_enabled, self.round, self.players[self.bidwinner]))
             print("\n----------")
-            played_card = self.players[self.turn[0]].play_card(cards_on_table, self.currentpick, self.kozciktimi, self.round)
+            played_card = self.players[self.turn[0]].play_card(cards_on_table, self.currentpick, self.is_trump_enabled, self.round)
             if self.roundwinner == -1:
                 self.roundwinner = self.turn[0]
                 self.winningcard = played_card
@@ -432,8 +619,8 @@ class Game:
                             self.winningcard = played_card
                             self.roundwinner = self.turn[0]
 
-            if played_card.color == self.currentpick and self.kozciktimi == 0:
-                self.kozciktimi = 1
+            if played_card.color == self.currentpick and self.is_trump_enabled == 0:
+                self.is_trump_enabled = 1
             cards_on_table.append(played_card)
             print(self.players[self.turn[0]].name + " played: " + str(played_card.color) + str(played_card.value) )
             self.turn.rotate(-1)
@@ -453,7 +640,9 @@ if __name__ == '__main__':
     mygame.bidding()
     for i in range(13):
         mygame.gameround()
-        print(len(mygame.players[0].cards))
+        #print(len(mygame.players[0].cards))
+    for i in range(4):
+        print(mygame.players[i].name +' '+ str(mygame.players[i].score))
 
 
     #for cart in gamblers[0].cards:

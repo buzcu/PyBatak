@@ -490,8 +490,9 @@ class Human(Player):
         card_list_spades = []
         card_list_diamonds = []
         chosen_suit = 'heart'
+
         for card in self.cards:
-            print('player cards: '+card.color+' '+card.value)
+            #print('player cards: '+card.color+' '+card.value)
             if card.color == 'heart':
                 card_list_hearts.append(card.value)
                 cardscores[0] += card.cardvalue[card.value]
@@ -504,6 +505,7 @@ class Human(Player):
             elif card.color == 'spade':
                 card_list_spades.append(card.value)
                 cardscores[3] += card.cardvalue[card.value]
+        self.print_player_cards()
         print('\nHearts point total: ' + str(cardscores[0]))
         print('\nClubs point total: ' + str(cardscores[1]))
         print('\nDiamonds point total: ' + str(cardscores[2]))
@@ -599,7 +601,8 @@ class Game:
         self.winningcard = Card('0', '')
         for x in range(4):
             print("players card options are as follows: \n")
-            print(self.players[self.turn[0]].list_playable_cards(cards_on_table, self.currentpick, self.is_trump_enabled, self.round, self.players[self.bidwinner]))
+            self.players[self.turn[0]].print_player_cards()
+            #print(self.players[self.turn[0]].list_playable_cards(cards_on_table, self.currentpick, self.is_trump_enabled, self.round, self.players[self.bidwinner]))
             print("\n----------")
             played_card = self.players[self.turn[0]].play_card(cards_on_table, self.currentpick, self.is_trump_enabled, self.round)
             if self.roundwinner == -1:

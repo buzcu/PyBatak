@@ -228,7 +228,14 @@ class Player:
                 if (cardsontable[0].color == 'heart' and len(self.hearts) == 0) or (cardsontable[0].color == 'spade' and len(self.spades) == 0) or (cardsontable[0].color == 'club' and len(self.clubs) == 0) or (cardsontable[0].color == 'diamond' and len(self.diamonds) == 0): # this means we dont have same suit therefore we should play trump
                     if trump == 'spade':
                         if len(self.spades) > 0: # check if we have any trump
-                            card_to_play = random.choice(self.spades)
+                            options = self.spades
+                            for playable_cards in self.spades:
+                                 for played_card in cardsontable:
+                                     if played_card.value > playable_cards.value and played_card.color == self.get_card_value(playable_cards):
+                                         options.remove(playable_cards) # if any of the played cards are higher rank then we must play higher rank if possible
+                            if len(options) == 0:
+                                options.append(self.spades[0])
+                            card_to_play = options[0]
                         else:
                             card_to_play = self.cards[0] # if we dont have koz it doesnt matter we will lose anyways so use smallest possible card
                     elif trump == 'heart':
@@ -248,6 +255,7 @@ class Player:
                             card_to_play = self.cards[0] # if we dont have trump it doesnt matter we will lose anyways
                 else:
                     if cardsontable[0].color == 'heart':
+
                         card_to_play = random.choice(self.hearts)
                     elif cardsontable[0].color == 'diamond':
                         card_to_play = random.choice(self.diamonds)
@@ -466,21 +474,26 @@ class Human(Player):
             chosen_one = 'heart'
             for i, cards in enumerate(self.hearts):
                 print(str(i) +' -> ' + str(cards))
+            chosen_card = int(input('\nChosen card: '))
+            return self.hearts[chosen_card]
         elif serie == 2:
             chosen_one = 'club'
             for i, cards in enumerate(self.clubs):
                 print(str(i) +' -> ' + str(cards))
+            chosen_card = int(input('\nChosen card: '))
+            return self.clubs[chosen_card]
         elif serie == 3:
             chosen_one = 'diamond'
             for i, cards in enumerate(self.diamonds):
                 print(str(i) +' -> ' + str(cards))
+            chosen_card = int(input('\nChosen card: '))
+            return self.diamonds[chosen_card]
         elif serie == 4:
             chosen_one = 'spade'
             for i, cards in enumerate(self.spades):
                 print(str(i) +' -> ' + str(cards))
-
-        #todo: write card selection part
-        #self.cards.remove(card_to_play)
+            chosen_card = int(input('\nChosen card: '))
+            return self.spades[chosen_card]
         return self.cards[0]
 
     def bid(self):

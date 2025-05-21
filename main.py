@@ -1,44 +1,6 @@
 import random
 from collections import deque
-from mcts import mcts
 from copy import copy, deepcopy
-
-
-class Tree(object):
-    # Generic tree node.
-    def __init__(self, name='root', children=None):
-        self.name = name
-        self.children = []
-        if children is not None:
-            for child in children:
-                self.add_child(child)
-
-    def __repr__(self):
-        return self.name
-
-    def add_child(self, node):
-        assert isinstance(node, Tree)
-        self.children.append(node)
-
-class State:
-    def getPossibleActions(self):
-        # Returns an iterable of all actions which can be taken from this state
-        print("")
-
-    def takeAction(self, action):
-        # Returns the state which results from taking action action
-        print(action)
-
-    def isTerminal(self):
-        # Returns whether this state is a terminal state
-        if len(self.getPossibleActions()) == 0:
-            return True
-        else:
-            return False
-
-    def getReward(self):
-        # Returns the reward for this state. Only needed for terminal states.
-        print("")
 
 
 class Card:
@@ -54,58 +16,11 @@ class Card:
     def __repr__(self):
         return self.color + ' ' + self.value
 
-    def print(self):
-        print(self.color, self.value)
-        if self.color=='heart':
-            print('''
- _____
-|'''+self.value+'''_ _ |
-|( v )|
-| \ / |
-|  .  |
-|____'''+'♥'+'''|
-''')
-        elif self.color=='club':
-            print("""
- _____
-|"""+self.value+""" _  |
-| ( ) |
-|(_'_)|
-|  |  |
-|____"""+'♣'+"""|""")
-        elif self.color=='diamond':
-            print("""
- _____
-|"""+self.value+""" ^  |
-| / \ |
-| \ / |
-|  .  |
-|____"""+'♦'+"""|
-""")
-        elif self.color=='spade':
-            print("""
- _____
-|"""+self.value+""" .  |
-| /.\ |
-|(_._)|
-|  |  |
-|____"""+'♠'+"""|
-""")
 
 
 class Player:
     cardvalue = {'A': 20, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 12, 'J': 14, 'Q': 16,
                  'K': 18, '0': 0}
-
-    def __init__(self):
-        self.name = ''
-        self.cards = []
-        self.woncards = []
-        self.score = 0
-        self.hearts = []
-        self.diamonds = []
-        self.clubs = []
-        self.spades = []
 
     def __init__(self, name, cardss):
         self.name = name
@@ -650,8 +565,6 @@ class Game:
 
 
 if __name__ == '__main__':
-
-    mcts = mcts(timeLimit=1000)
     mygame = Game()
     mygame.bidding()
     for i in range(13):
@@ -660,7 +573,4 @@ if __name__ == '__main__':
     for i in range(4):
         print(mygame.players[i].name +' '+ str(mygame.players[i].score))
 
-
-    #for cart in gamblers[0].cards:
-    #    cart.print()
 

@@ -25,8 +25,6 @@ class Card:
         """Return a human-readable string representation of the card."""
         return f"{self.FACE_CARD_NAMES.get(self.rank, self.rank)} of {self.suit}"
 
-    def __eq__(self, other):
-        return ((self.rank == other.rank) and (self.suit == other.suit))
 
     def __lt__(self, other):
         return self.rank < other.rank

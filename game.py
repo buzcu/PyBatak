@@ -30,7 +30,7 @@ class Game:
                     return True #it must be in increasing value order if able to play
                 else:
                     for cardd in self.players[self.current_player_index].hand:
-                        if cardd.suit == self.cards_on_table[0].suit and (cardd.get_value() > (self.cards_on_table[len(self.cards_on_table) - 1]).get_value()):
+                        if cardd.suit == self.cards_on_table[0].suit and (cardd.get_value() > ((max([card for card in self.cards_on_table if card.suit == self.cards_on_table[0].suit],  key=lambda card: card.rank)).get_value())):
                             return False # this card is not legal because player has a higher ranked card of the same suit
                     return True # there is no higher ranked card from the same suit in hand
 
@@ -79,12 +79,16 @@ class Game:
         self.winningcard = None
         for x in range(4):
             print("players card options are as follows: \n")
-            legal_cards = [ card for card in self.players[(self.current_player_index+x)%4].hand if self.is_play_legal(card)]
+            legal_cards = [ card for card in self.players[(self.current_player_index)].hand if self.is_play_legal(card)]
             print("\n----------")
             if len(legal_cards) == 0:
                 print(" !!! ERROR: No legal cards available !!!")
+                print("Player cards are: " + str(self.players[(self.current_player_index)].hand))
+                print("Cards on table are: " + str(self.cards_on_table))
+                print("Trump is: " + str(self.trump))
+                print("Current player is: " + str(self.players[(self.current_player_index)].name))
                 return
-            played_card = self.players[(self.current_player_index+x)%4].play_card(self.cards_on_table, self.trump, legal_cards)
+            played_card = self.players[(self.current_player_index)].play_card(self.cards_on_table, self.trump, legal_cards)
             if played_card == None:
                 print(" !!! ERROR: No card played !!!")
                 return
@@ -92,6 +96,7 @@ class Game:
                 print(" !!! ERROR: Card not legal !!!")
                 return
             self.cards_on_table.append(played_card)
+            self.current_player_index = (self.current_player_index+1)%4
         
                 
         self.determine_winning_card()

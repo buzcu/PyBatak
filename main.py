@@ -2,10 +2,6 @@ from game import Game
 from player import Player
 from deck import Deck
 
-
-
-
-
 if __name__ == '__main__':
     mydeck = Deck()
     mydeck.shuffle()
@@ -18,7 +14,6 @@ if __name__ == '__main__':
     mygame.bidding()
     for i in range(13):
         mygame.gameround()
-        #print(len(mygame.players[0].cards))
     for i in range(4):
         print(players[i].name +' '+ str(players[i].score))
 

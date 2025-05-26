@@ -4,7 +4,6 @@ from player import Player
 class Game:
     def __init__(self,players):
         self.players = players
-        self.deck = []
         self.trump = None
         self.is_trump_enabled = False
         self.bidwinner = None
@@ -46,22 +45,12 @@ class Game:
                     return False # player must play the same suit as the first card played
 
     def bidding(self):
-        bids = []
-        bids.append(self.players[0].bid())
-        max_bid = 0
-        bids.append(self.players[1].bid())
-        if bids[1] > bids[0]:
-            max_bid = 1
-        bids.append(self.players[2].bid())
-        if bids[2] > bids[max_bid]:
-            max_bid = 2
-        bids.append(self.players[3].bid())
-        if bids[3] > bids[max_bid]:
-            max_bid = 3
+        bids = [player.bid() for player in self.players]
+        max_bid_index = bids.index(max(bids))
     
-        self.trump = self.players[max_bid].choose_trump()
-        print('Trump: ' + self.trump + ' by player: ' + self.players[max_bid].name)
-        self.current_player_index = max_bid #bid winner starts first
+        self.trump = self.players[max_bid_index].choose_trump()
+        print('Trump: ' + self.trump + ' by player: ' + self.players[max_bid_index].name)
+        self.current_player_index = max_bid_index #bid winner starts first
     
     def determine_winning_card(self):
         trump_cards = [card for card in self.cards_on_table if card.suit == self.trump]
@@ -88,6 +77,7 @@ class Game:
                 print("Trump is: " + str(self.trump))
                 print("Current player is: " + str(self.players[(self.current_player_index)].name))
                 return
+            print("Cards: " + str(legal_cards))    
             played_card = self.players[(self.current_player_index)].play_card(self.cards_on_table, self.trump, legal_cards)
             if played_card == None:
                 print(" !!! ERROR: No card played !!!")
@@ -95,6 +85,7 @@ class Game:
             if played_card not in legal_cards:
                 print(" !!! ERROR: Card not legal !!!")
                 return
+            print("" + self.players[(self.current_player_index)].name + " played: " + str(played_card))
             self.cards_on_table.append(played_card)
             self.current_player_index = (self.current_player_index+1)%4
         

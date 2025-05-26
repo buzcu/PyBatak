@@ -1,4 +1,6 @@
 import pytest
+import sys
+sys.path.append("..")
 from card import Card
 
 @pytest.fixture

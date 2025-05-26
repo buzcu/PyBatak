@@ -38,6 +38,11 @@ class Card:
     def __ge__(self, other):
         return  self.rank >= other.rank
 
+    def __eq__(self, other):
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.suit == other.suit and self.rank == other.rank
+        
     def __hash__(self):
         return hash((self.suit, self.rank))
 

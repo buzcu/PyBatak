@@ -1,4 +1,6 @@
 import pytest
+import sys
+sys.path.append("..")
 from deck import Deck
 from card import Card
 

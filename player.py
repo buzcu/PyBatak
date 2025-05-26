@@ -42,17 +42,17 @@ class Player:
     def _rule_based_trump_round(self, cards_on_table: List[Card], trump_suit: str, legal_cards: List[Card]) -> Card:
         same_suit_cards = [card for card in legal_cards if card.suit == cards_on_table[0].suit]
         if len(same_suit_cards) == 0:
-            chosen = min(legal_cards, key=lambda card: card.rank)
+            chosen = min(legal_cards)
         else:
             trump_cards = [card for card in legal_cards if card.suit == trump_suit]
             
             if len(trump_cards) == 1:
                 chosen = trump_cards[0]
             else:
-                if max(trump_cards, key=lambda card: card.rank) > max(cards_on_table, key=lambda card: card.rank):
-                    chosen = max(trump_cards, key=lambda card: card.rank)
+                if max(trump_cards) > max(cards_on_table):
+                    chosen = max(trump_cards)
                 else:
-                    chosen = min(trump_cards, key=lambda card: card.rank)
+                    chosen = min(trump_cards)
         return chosen
     
     def _rule_based_regular_round_without_trump(self, cards_on_table: List[Card], trump_suit: str, legal_cards: List[Card]) -> Card:
@@ -63,36 +63,36 @@ class Player:
             else:
                 trump_cards = [card for card in legal_cards if card.suit == trump_suit]
                 if trump_cards:
-                    chosen = min(trump_cards, key=lambda card: card.rank)
+                    chosen = min(trump_cards)
                 else:
-                    chosen = min(legal_cards, key=lambda card: card.rank)
+                    chosen = min(legal_cards)
                 
         else:
             if len(same_suit_cards) == 1:
                 chosen = same_suit_cards[0]
             else:
-                if max(same_suit_cards, key=lambda card: card.rank) > max(cards_on_table, key=lambda card: card.rank):
-                    chosen = max(same_suit_cards, key=lambda card: card.rank)
+                if max(same_suit_cards) > max(cards_on_table):
+                    chosen = max(same_suit_cards)
                 else:
-                    chosen = min(same_suit_cards, key=lambda card: card.rank)
+                    chosen = min(same_suit_cards)
         return chosen
 
     def _rule_based_regular_round_with_trump(self, cards_on_table: List[Card], trump_suit: str, legal_cards: List[Card]) -> Card:
         same_suit_cards = [card for card in legal_cards if card.suit == cards_on_table[0].suit] 
         if len(same_suit_cards) > 0:
-            chosen = min(same_suit_cards, key=lambda card: card.rank)
+            chosen = min(same_suit_cards)
         else:
             trump_cards = [card for card in legal_cards if card.suit == trump_suit]
             if trump_cards:
                 if len(trump_cards) == 1:
                     chosen = trump_cards[0]
                 else:
-                    if max(trump_cards, key=lambda card: card.rank) > max(cards_on_table, key=lambda card: card.rank):
-                        chosen = max(trump_cards, key=lambda card: card.rank)
+                    if max(trump_cards) > max(cards_on_table):
+                        chosen = max(trump_cards)
                     else:
-                        chosen = min(trump_cards, key=lambda card: card.rank)
+                        chosen = min(trump_cards)
             else:
-                chosen = min(legal_cards, key=lambda card: card.rank) 
+                chosen = min(legal_cards) 
         return chosen
     
     def _rule_based_regular_round(self, cards_on_table: List[Card], trump_suit: str, legal_cards: List[Card]) -> Card:
@@ -104,7 +104,7 @@ class Player:
 
     def _rule_based_play(self, cards_on_table: List[Card], trump_suit: str, legal_cards: List[Card]) -> Card:
         if(len(cards_on_table) == 0):
-            chosen = min(legal_cards, key=lambda card: card.rank)
+            chosen = min(legal_cards)
             return chosen
         is_it_trump_round = cards_on_table[0].suit == trump_suit
         if not is_it_trump_round:

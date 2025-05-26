@@ -6,7 +6,6 @@ class Game:
         self.players = players
         self.trump = None
         self.is_trump_enabled = False
-        self.bidwinner = None
         self.cards_on_table = []
         self.current_player_index = 0
 

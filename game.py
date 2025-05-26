@@ -11,33 +11,37 @@ class Game:
         self.current_player_index = 0
 
     def is_play_legal(self, card):
+        player = self.players[self.current_player_index]
 
         if len(self.cards_on_table) == 0:
             if card.suit != self.trump:
                 return True
             elif card.suit == self.trump:
-                if self.is_trump_enabled == False:
-                    if len(self.players[self.current_player_index].hand) == self.players[self.current_player_index].number_of_cards_in_suit(self.trump):
+                if not self.is_trump_enabled:
+                    if len(player.hand) == player.number_of_cards_in_suit(self.trump):
                         return True # only left cards are trump cards
                     return False # trump is not out yet
                 else:
                     return True 
         
         else:
-            if card.suit == self.cards_on_table[0].suit:
-                if card.get_value() > (self.cards_on_table[len(self.cards_on_table) - 1]).get_value():
-                    return True #it must be in increasing value order if able to play
+            leading_suit = self.cards_on_table[0].suit
+            if card.suit == leading_suit:
+                if self.is_trump_enabled:
+                    return True # player can play a card of the same suit without rank restriction if somebodyelse has played a trump card
+                if card.get_value() > ( max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).get_value():
+                    return True #player can play a card of the same suit with higher rank than the highest card played so far
                 else:
-                    for cardd in self.players[self.current_player_index].hand:
-                        if cardd.suit == self.cards_on_table[0].suit and (cardd.get_value() > ((max([card for card in self.cards_on_table if card.suit == self.cards_on_table[0].suit],  key=lambda card: card.rank)).get_value())):
-                            return False # this card is not legal because player has a higher ranked card of the same suit
-                    return True # there is no higher ranked card from the same suit in hand
+                    if((max(filter(lambda card: card.suit==leading_suit, player.hand))).get_value() < (max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).get_value()):
+                        return True # player can play a card of the same suit with lower rank than the highest card played so far, if he has no higher card in his hand
+                    else:
+                        return False
 
             else:
-                if self.players[self.current_player_index].number_of_cards_in_suit(self.cards_on_table[0].suit) == 0:
+                if player.number_of_cards_in_suit(leading_suit) == 0:
                     if card.suit == self.trump:
                         return True # player can play trump card
-                    elif self.players[self.current_player_index].number_of_cards_in_suit(self.trump) == 0:
+                    elif player.number_of_cards_in_suit(self.trump) == 0:
                         return True # player can play any card
                     else:
                         return False # player must play trump card
@@ -55,39 +59,46 @@ class Game:
     def determine_winning_card(self):
         trump_cards = [card for card in self.cards_on_table if card.suit == self.trump]
         if trump_cards:
-            winningcard = max(trump_cards, key=lambda card: card.rank)
+            winningcard = max(trump_cards)
         else:
             same_suit_cards = [card for card in self.cards_on_table if card.suit == self.cards_on_table[0].suit]
-            winningcard = max(same_suit_cards, key=lambda card: card.rank)
+            winningcard = max(same_suit_cards)
         self.roundwinner = (self.cards_on_table.index(winningcard)+self.roundwinnerindexoffset)%4
 
     def gameround(self):
         self.cards_on_table.clear()
         self.roundwinner = None
         self.roundwinnerindexoffset = self.current_player_index
-        self.winningcard = None
-        for x in range(4):
-            print("players card options are as follows: \n")
-            legal_cards = [ card for card in self.players[(self.current_player_index)].hand if self.is_play_legal(card)]
-            print("\n----------")
+        player = self.players[self.current_player_index]
+        for _ in range(4):
+            print("\nCurrent player: " +player.name)
+            print("Cards on table: " + str(self.cards_on_table))
+            print("Player hand: " + str(player.hand))
+            print("players card options are as follows:")
+            legal_cards = [ card for card in player.hand if self.is_play_legal(card)]
+            
             if len(legal_cards) == 0:
                 print(" !!! ERROR: No legal cards available !!!")
-                print("Player cards are: " + str(self.players[(self.current_player_index)].hand))
+                print("Player cards are: " + str(player.hand))
                 print("Cards on table are: " + str(self.cards_on_table))
                 print("Trump is: " + str(self.trump))
-                print("Current player is: " + str(self.players[(self.current_player_index)].name))
+                print("Current player is: " + str(player.name))
                 return
             print("Cards: " + str(legal_cards))    
-            played_card = self.players[(self.current_player_index)].play_card(self.cards_on_table, self.trump, legal_cards)
+            played_card = player.play_card(self.cards_on_table, self.trump, legal_cards)
             if played_card == None:
                 print(" !!! ERROR: No card played !!!")
                 return
             if played_card not in legal_cards:
                 print(" !!! ERROR: Card not legal !!!")
                 return
-            print("" + self.players[(self.current_player_index)].name + " played: " + str(played_card))
+            if played_card.suit == self.trump:
+                self.is_trump_enabled = True
+                
+            print("" + player.name + " played: " + str(played_card))
             self.cards_on_table.append(played_card)
             self.current_player_index = (self.current_player_index+1)%4
+            player = self.players[self.current_player_index]
         
                 
         self.determine_winning_card()

@@ -1,5 +1,5 @@
-from .card import Card
-from .player import Player
+from batak.card import Card
+from batak.player import Player
 
 class Game:
     def __init__(self,players):
@@ -8,6 +8,10 @@ class Game:
         self.is_trump_enabled = False
         self.cards_on_table = []
         self.current_player_index = 0
+        self.bids = []
+        self.trumps = []
+        self.roundwinner = None
+        self.roundwinnerindexoffset = 0
 
     def is_play_legal(self, card):
         player = self.players[self.current_player_index]
@@ -47,11 +51,14 @@ class Game:
                 else:
                     return False # player must play the same suit as the first card played
 
-    def bidding(self):
-        bids = [player.bid() for player in self.players]
-        max_bid_index = bids.index(max(bids))
-    
-        self.trump = self.players[max_bid_index].choose_trump()
+    def register_bids(self, bid_and_trump):
+        self.bids.append(bid_and_trump[0])
+        self.trumps.append(bid_and_trump[1])
+        
+    def bidding_results(self):
+        #bids = [player.bid() for player in self.players]
+        max_bid_index = self.bids.index(max(self.bids))
+        self.trump = self.trumps[max_bid_index]
         print('Trump: ' + self.trump + ' by player: ' + self.players[max_bid_index].name)
         self.current_player_index = max_bid_index #bid winner starts first
     
@@ -64,45 +71,37 @@ class Game:
             winningcard = max(same_suit_cards)
         self.roundwinner = (self.cards_on_table.index(winningcard)+self.roundwinnerindexoffset)%4
 
-    def gameround(self):
+    def get_legal_cards(self):
+        player = self.players[self.current_player_index]
+        legal_cards = [card for card in player.hand if self.is_play_legal(card)]
+        return legal_cards
+
+    def start_round(self):
         self.cards_on_table.clear()
         self.roundwinner = None
         self.roundwinnerindexoffset = self.current_player_index
-        player = self.players[self.current_player_index]
-        for _ in range(4):
-            print("\nCurrent player: " +player.name)
-            print("Cards on table: " + str(self.cards_on_table))
-            print("Player hand: " + str(player.hand))
-            print("players card options are as follows:")
-            legal_cards = [ card for card in player.hand if self.is_play_legal(card)]
-            
-            if len(legal_cards) == 0:
-                print(" !!! ERROR: No legal cards available !!!")
-                print("Player cards are: " + str(player.hand))
-                print("Cards on table are: " + str(self.cards_on_table))
-                print("Trump is: " + str(self.trump))
-                print("Current player is: " + str(player.name))
-                return
-            print("Cards: " + str(legal_cards))    
-            played_card = player.play_card(self.cards_on_table, self.trump, legal_cards)
-            if played_card == None:
-                print(" !!! ERROR: No card played !!!")
-                return
-            if played_card not in legal_cards:
-                print(" !!! ERROR: Card not legal !!!")
-                return
-            if played_card.suit == self.trump:
+        return self.current_player_index
+
+    def register_played_card(self, card):
+        if card == None:
+            print(" !!! ERROR: No card played !!!")
+            return
+        print("" + self.players[self.current_player_index].name + " played: " + str(card))
+        self.cards_on_table.append(card)
+        self.current_player_index = (self.current_player_index + 1) % 4
+        if card.suit == self.trump:
                 self.is_trump_enabled = True
-                
-            print("" + player.name + " played: " + str(played_card))
-            self.cards_on_table.append(played_card)
-            self.current_player_index = (self.current_player_index+1)%4
-            player = self.players[self.current_player_index]
         
-                
+    def finalize_round(self):
         self.determine_winning_card()
-        
         print("Round winner: " + self.players[self.roundwinner].name)
         self.players[self.roundwinner].score += 1
         self.current_player_index = self.roundwinner
+
+    def get_trump(self):
+        return self.trump
+    
+    def get_cards_on_table(self):
+        return self.cards_on_table
+ 
         

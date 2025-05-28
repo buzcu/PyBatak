@@ -1,4 +1,4 @@
-from .card import Card
+from batak.card import Card
 from typing import List, Optional
 
 class Player:
@@ -12,11 +12,13 @@ class Player:
         """Return the number of cards in the player's hand of a given suit."""
         return len([card for card in self.hand if card.suit == suit])
 
-    def bid(self) -> int:
+    def bid(self) -> (int, str):
         if self.is_bot:
-            return self.simple_bid_logic()
+            return (self.simple_bid_logic(), self.choose_trump())
         else:
-            return int(input(f"{self.name}, enter your bid: "))
+            my_bid = int(input(f"{self.name}, enter your bid: "))
+            my_trump = self.choose_trump()
+            return (my_bid, my_trump)
 
     def simple_bid_logic(self) -> int:
         high_cards = [card for card in self.hand if card.rank >= 11]

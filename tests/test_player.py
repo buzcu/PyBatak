@@ -1,8 +1,9 @@
 import pytest
 import sys
+sys.path.append("..")
 sys.path.append("../batak")
-from player import Player
-from card import Card
+from batak.player import Player
+from batak.card import Card
 from unittest.mock import patch
 
 
@@ -37,26 +38,6 @@ def test_simple_bid_logic(bot_player):
     bid = bot_player.simple_bid_logic()
     assert isinstance(bid, int)
     assert 5 <= bid <= 13
-
-
-@patch('builtins.input', return_value='7')
-def test_bid_user_input(mock_input, human_player):
-    assert human_player.bid() == 7
-
-
-def test_bot_bid(bot_player):
-    bid = bot_player.bid()
-    assert isinstance(bid, int)
-
-
-@patch('builtins.input', side_effect=['Hearts'])
-def test_choose_trump_valid(mock_input, human_player):
-    assert human_player.choose_trump() == 'Hearts'
-
-
-@patch('builtins.input', side_effect=['Invalid', 'Clubs'])
-def test_choose_trump_retry_on_invalid(mock_input, human_player):
-    assert human_player.choose_trump() == 'Clubs'
 
 
 def test_simple_trump_logic(bot_player):

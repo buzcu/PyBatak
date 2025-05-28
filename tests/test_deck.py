@@ -1,5 +1,6 @@
 import pytest
 import sys
+sys.path.append("..")
 sys.path.append("../batak")
 from deck import Deck
 from card import Card

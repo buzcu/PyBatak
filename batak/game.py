@@ -1,5 +1,5 @@
-from card import Card
-from player import Player
+from .card import Card
+from .player import Player
 
 class Game:
     def __init__(self,players):

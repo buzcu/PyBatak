@@ -1,6 +1,6 @@
 from typing import List
 import random
-from .card import Card
+from batak.card import Card
 
 class Deck:
     def __init__(self):

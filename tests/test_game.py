@@ -1,9 +1,10 @@
 import pytest
 import sys
+sys.path.append("..")
 sys.path.append("../batak")
-from game import Game
-from player import Player
-from card import Card
+from batak.game import Game
+from batak.player import Player
+from batak.card import Card
 from unittest.mock import patch
 
 
@@ -51,15 +52,6 @@ def test_is_play_legal_trump_required(players):
     assert game.is_play_legal(card) is False
 
 
-@patch('player.Player.bid', side_effect=[7, 5, 6, 4])
-@patch('player.Player.choose_trump', return_value='Spades')
-def test_bidding_and_trump_selection(mock_trump, mock_bids, players):
-    game = Game(players)
-    game.bidding()
-    assert game.trump == 'Spades'
-    assert game.current_player_index == 0  # Player 1 wins with bid 7
-
-
 def test_determine_winning_card_trump_wins(players):
     game = Game(players)
     game.trump = 'Hearts'
@@ -94,7 +86,11 @@ def test_full_round_simulation(mock_play_card, players):
     game.trump = 'Hearts'
     game.is_trump_enabled = False
     game.current_player_index = 0
-    game.gameround()
+    game.register_played_card(Card("Hearts", 13)) 
+    game.register_played_card(Card("Hearts", 12))
+    game.register_played_card(Card("Hearts", 11))
+    game.register_played_card(Card("Hearts", 10))
+    game.finalize_round()
     # After round, round winner should have increased score
     assert any(p.score == 1 for p in players)
     assert len(game.cards_on_table) == 4

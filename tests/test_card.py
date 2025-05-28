@@ -1,6 +1,6 @@
 import pytest
 import sys
-sys.path.append("..")
+sys.path.append("../batak")
 from card import Card
 
 @pytest.fixture

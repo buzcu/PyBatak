@@ -1,6 +1,9 @@
-from game import Game
-from player import Player
-from deck import Deck
+import sys
+sys.path.append("/batak")
+
+from batak.game import Game
+from batak.player import Player
+from batak.deck import Deck
 import random
 
 def run_game():

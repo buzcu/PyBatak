@@ -1,8 +1,7 @@
 import pytest
 import sys
-sys.path.append("../batak")
-from deck import Deck
-from card import Card
+sys.path.append("..")
+from batak import Deck, Card
 
 @pytest.fixture
 def fresh_deck():

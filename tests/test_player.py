@@ -1,8 +1,8 @@
 import pytest
 import sys
-sys.path.append("../batak")
-from player import Player
-from card import Card
+sys.path.append("..")
+from batak import Player
+from batak import Card
 from unittest.mock import patch
 
 

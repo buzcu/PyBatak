@@ -1,9 +1,7 @@
 import pytest
 import sys
-sys.path.append("../batak")
-from game import Game
-from player import Player
-from card import Card
+sys.path.append("..")
+from batak import Game, Player, Card
 from unittest.mock import patch
 
 
@@ -51,8 +49,8 @@ def test_is_play_legal_trump_required(players):
     assert game.is_play_legal(card) is False
 
 
-@patch('player.Player.bid', side_effect=[7, 5, 6, 4])
-@patch('player.Player.choose_trump', return_value='Spades')
+@patch('batak.Player.bid', side_effect=[7, 5, 6, 4])
+@patch('batak.Player.choose_trump', return_value='Spades')
 def test_bidding_and_trump_selection(mock_trump, mock_bids, players):
     game = Game(players)
     game.bidding()
@@ -88,7 +86,7 @@ def test_determine_winning_card_no_trump(players):
     assert game.roundwinner == 1  # 'Hearts', 13 wins
 
 
-@patch('player.Player.play_card', side_effect=lambda table, trump, legal: legal[0])
+@patch('batak.Player.play_card', side_effect=lambda table, trump, legal: legal[0])
 def test_full_round_simulation(mock_play_card, players):
     game = Game(players)
     game.trump = 'Hearts'

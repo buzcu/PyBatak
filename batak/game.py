@@ -28,10 +28,10 @@ class Game:
             if card.suit == leading_suit:
                 if self.is_trump_enabled:
                     return True # player can play a card of the same suit without rank restriction if somebodyelse has played a trump card
-                if card.get_value() > ( max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).get_value():
+                if card.rank > ( max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).rank:
                     return True #player can play a card of the same suit with higher rank than the highest card played so far
                 else:
-                    if((max(filter(lambda card: card.suit==leading_suit, player.hand))).get_value() < (max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).get_value()):
+                    if((max(filter(lambda card: card.suit==leading_suit, player.hand))).rank < (max(filter(lambda card: card.suit==leading_suit, self.cards_on_table))).rank):
                         return True # player can play a card of the same suit with lower rank than the highest card played so far, if he has no higher card in his hand
                     else:
                         return False

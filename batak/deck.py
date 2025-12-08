@@ -1,8 +1,13 @@
+""" 
+Docstring for batak.deck
+This module defines the Deck class for a standard 52-card deck used in the Batak game"""
 from typing import List
 import random
 from .card import Card
 
+
 class Deck:
+    """Deck class representing a standard 52-card deck. """
     def __init__(self):
         self.cards: List[Card] = []
         self.build()
@@ -22,7 +27,7 @@ class Deck:
         if num_cards > len(self.cards):
             raise ValueError("Not enough cards left in the deck!")
         dealt_cards = []
-        for i in range(num_cards):
+        for _ in range(num_cards):
             dealt_cards.append(self.cards.pop())
         return dealt_cards
 

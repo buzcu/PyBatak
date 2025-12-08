@@ -24,7 +24,7 @@ def sample_full_hand():
         Card("Hearts", 3),
         Card("Hearts", 4),
         Card("Spades", 11),
-        Card("Clubs", 9),
+        Card("Clubs", 8),
         Card("Hearts", 7),
         Card("Clubs", 9),
         Card("Clubs", 11),

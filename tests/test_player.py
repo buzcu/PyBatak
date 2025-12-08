@@ -19,9 +19,30 @@ def sample_hand():
 
 
 @pytest.fixture
+def sample_full_hand():
+    return [
+        Card("Hearts", 3),
+        Card("Hearts", 4),
+        Card("Spades", 11),
+        Card("Clubs", 9),
+        Card("Hearts", 7),
+        Card("Hearts", 9),
+        Card("Clubs", 11),
+        Card("Clubs", 12),
+        Card("Clubs", 10),
+        Card("Diamonds", 7),
+        Card("Spades", 5),
+        Card("Diamonds", 11),
+        Card("Spades", 7),
+    ]
+
+@pytest.fixture
 def bot_player(sample_hand):
     return Player("BotPlayer", is_bot=True, hand=sample_hand.copy())
 
+@pytest.fixture
+def bot_player2(sample_full_hand):
+    return Player("BotPlayer2", is_bot=True, hand=sample_full_hand.copy())
 
 @pytest.fixture
 def human_player(sample_hand):
@@ -35,8 +56,13 @@ def test_number_of_cards_in_suit(bot_player):
     assert bot_player.number_of_cards_in_suit("Diamonds") == 1
 
 
-def test_simple_bid_logic(bot_player):
-    bid = bot_player.simple_bid_logic()
+def test_simple_trump_logic_2(bot_player2):
+    trump = bot_player2.simple_trump_logic()
+    assert trump == "Clubs"  # BotPlayer2 has the most Clubs cards
+
+
+def test_simple_bid_logic(bot_player2):
+    bid = bot_player2.simple_bid_logic()
     assert isinstance(bid, int)
     assert 5 <= bid <= 13
 

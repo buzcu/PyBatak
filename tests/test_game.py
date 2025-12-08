@@ -59,10 +59,15 @@ def test_is_play_legal_leading_card(players):
 def test_is_play_legal_following_same_suit(players):
     game = Game(players)
     game.trump = "Diamonds"
+    game.is_trump_enabled = True
     game.cards_on_table = [Card("Hearts", 10), Card("Hearts", 9)]
     game.current_player_index = 0
     card = Card("Hearts", 14)
     assert game.is_play_legal(card) is True
+    assert game.is_play_legal(Card("Hearts", 13)) is True
+    assert game.is_play_legal(Card("Hearts", 8)) is False
+    assert game.is_play_legal(Card("Diamonds", 2)) is False
+    
 
 
 def test_is_play_legal_trump_required(players):
@@ -73,6 +78,17 @@ def test_is_play_legal_trump_required(players):
     players[1].hand = [Card("Spades", 13), Card("Hearts", 2)]
     card = Card("Hearts", 2)
     # Must play trump
+    assert game.is_play_legal(card) is False
+
+def test_is_play_legal_trump_not_yet_enabled(players):
+    game = Game(players)
+    game.trump = "Hearts"
+    game.is_trump_enabled = False
+    game.cards_on_table = []
+    game.current_player_index = 0
+    players[0].hand = [Card("Hearts", 14), Card("Spades", 10)]
+    card = Card("Hearts", 14)
+    # Cannot lead with trump if not enabled and other suits are available
     assert game.is_play_legal(card) is False
 
 

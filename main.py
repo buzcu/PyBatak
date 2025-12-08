@@ -1,14 +1,17 @@
-import sys
-
-sys.path.append("/batak")
-
+"""
+Docstring for main.py 
+This is the entry point for the Batak game in console mode.
+"""
+import random
 from batak.game import Game
 from batak.player import Player
 from batak.deck import Deck
-import random
 
 
 def run_game():
+    """
+    Runs a console-based Batak game with 4 players (4 bots and 0 human).
+    """
     deck = Deck()
     deck.shuffle()
 

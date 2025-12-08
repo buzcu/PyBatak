@@ -1,8 +1,15 @@
+"""
+Docstring for batak.card
+this module represents a standard playing card used in the Batak game.
+"""
 from dataclasses import dataclass, field
 
 
 @dataclass(order=True, frozen=True)
 class Card:
+    """
+    Card class for a standard 52-card deck.
+    """
     sort_index: int = field(init=False, repr=False)
     suit: str
     rank: int

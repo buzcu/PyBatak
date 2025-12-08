@@ -54,7 +54,7 @@ def test_deal(fresh_deck):
         assert card not in fresh_deck.cards
 
 
-""" def test_deal_removes_cards(fresh_deck):
+def test_deal_removes_cards(fresh_deck):
     dealt_cards = fresh_deck.deal(5)
     assert len(fresh_deck) == 47
 
@@ -64,7 +64,7 @@ def test_deal(fresh_deck):
 
     # Check remaining cards are correct
     for card in fresh_deck.cards:
-        assert card not in dealt_cards """
+        assert card not in dealt_cards
 
 
 def test_deal_too_many(fresh_deck):

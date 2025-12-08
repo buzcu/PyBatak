@@ -1,75 +1,103 @@
+"""Module implementing the core game logic for Batak."""
 from .card import Card
 from .player import Player
 
 
 class Game:
+    """Class representing a Batak game."""
     def __init__(self, players: list[Player]):
         self.players = players
         self.trump = None
         self.is_trump_enabled = False
         self.cards_on_table = []
         self.current_player_index = 0
+        self.roundwinner = None
+        self.roundwinnerindexoffset = 0
+
+    def _can_lead_card(self, player: Player, card: Card) -> bool:
+        """Return True if `card` can be led when table is empty.
+
+        Preserves original behaviour: non-trump can always be led; trump
+        can only be led when trump is enabled or player only has trump cards.
+        """
+        if card.suit != self.trump:
+            return True
+        # card is trump
+        if not self.is_trump_enabled:
+            if len(player.hand) == player.number_of_cards_in_suit(self.trump):
+                return True
+            return False
+        return True
+
+    def _can_follow_same_suit_with_trump_enabled(self,
+                                                 player: Player,
+                                                 card: Card,
+                                                 trump_on_table) -> bool:
+        # If player plays a non-trump of the leading suit, it's allowed.
+        if card.suit != self.trump:
+            return True
+
+        # Card is trump: compare ranks against highest trump on table
+        highest_trump_on_table = max(trump_on_table)
+        if card.rank > highest_trump_on_table.rank:
+            return True
+
+        # Player may play a lower trump only if they have an even higher trump
+        player_trumps = [hc for hc in player.hand if hc.suit == self.trump]
+        if player_trumps and highest_trump_on_table.rank < max(player_trumps).rank:
+            return True
+        return False
+
+    def _can_follow_same_suit(self, player: Player, card: Card, leading_suit: str) -> bool:
+        """Return True if `card` is legal when following the leading suit.
+
+        Implements the existing logic that considers whether trump is enabled
+        and whether trumps are on the table. Uses card ordering (rank) as before.
+        """
+        # If trumps are enabled and there is at least one trump on the table,
+        # special rules apply.
+        trump_on_table = [c for c in self.cards_on_table if c.suit == self.trump]
+        if self.is_trump_enabled and any(trump_on_table):
+            return self._can_follow_same_suit_with_trump_enabled(player, card, trump_on_table)
+        # Regular same-suit following rules (no special trump-on-table case)
+        highest_on_table_same = max(
+            filter(lambda c: c.suit == leading_suit, self.cards_on_table)
+        )
+        if card.rank > highest_on_table_same.rank:
+            return True
+
+        highest_in_hand_same = max(filter(lambda c: c.suit == leading_suit, player.hand))
+        if highest_in_hand_same.rank < highest_on_table_same.rank:
+            return True
+
+        return False
+
+    def _can_follow_different_suit(self, player: Player, card: Card, leading_suit: str) -> bool:
+        """Return True if `card` is legal when it does NOT match the leading suit."""
+        if player.number_of_cards_in_suit(leading_suit) == 0:
+            if card.suit == self.trump:
+                return True
+            if player.number_of_cards_in_suit(self.trump) == 0:
+                return True
+            return False
+        return False
 
     def is_play_legal(self, card: Card):
+        """Check if playing the given card is legal according to game rules."""
         player = self.players[self.current_player_index]
 
+        # Leading play
         if len(self.cards_on_table) == 0:
-            if card.suit != self.trump:
-                return True
-            elif card.suit == self.trump:
-                if not self.is_trump_enabled:
-                    if len(player.hand) == player.number_of_cards_in_suit(self.trump):
-                        return True  # only left cards are trump cards
-                    return False  # trump is not out yet
-                else:
-                    return True
+            return self._can_lead_card(player, card)
 
-        else:
-            leading_suit = self.cards_on_table[0].suit
-            if card.suit == leading_suit:
-                if self.is_trump_enabled:
-                    return True  # player can play a card of the same suit without rank restriction if somebodyelse has played a trump card
-                if (
-                    card.rank
-                    > (
-                        max(
-                            filter(
-                                lambda card: card.suit == leading_suit,
-                                self.cards_on_table,
-                            )
-                        )
-                    ).rank
-                ):
-                    return True  # player can play a card of the same suit with higher rank than the highest card played so far
-                else:
-                    if (
-                        max(filter(lambda card: card.suit == leading_suit, player.hand))
-                    ).rank < (
-                        max(
-                            filter(
-                                lambda card: card.suit == leading_suit,
-                                self.cards_on_table,
-                            )
-                        )
-                    ).rank:
-                        return True  # player can play a card of the same suit with lower rank than the highest card played so far, if he has no higher card in his hand
-                    else:
-                        return False
+        leading_suit = self.cards_on_table[0].suit
+        if card.suit == leading_suit:
+            return self._can_follow_same_suit(player, card, leading_suit)
 
-            else:
-                if player.number_of_cards_in_suit(leading_suit) == 0:
-                    if card.suit == self.trump:
-                        return True  # player can play trump card
-                    elif player.number_of_cards_in_suit(self.trump) == 0:
-                        return True  # player can play any card
-                    else:
-                        return False  # player must play trump card
-                else:
-                    return (
-                        False  # player must play the same suit as the first card played
-                    )
+        return self._can_follow_different_suit(player, card, leading_suit)
 
     def bidding(self):
+        """Conduct the bidding phase to determine trump suit and starting player."""
         bids = [player.bid() for player in self.players]
         max_bid_index = bids.index(max(bids))
 
@@ -80,6 +108,7 @@ class Game:
         self.current_player_index = max_bid_index  # bid winner starts first
 
     def determine_winning_card(self):
+        """Determine the winning card and the round winner."""
         trump_cards = [card for card in self.cards_on_table if card.suit == self.trump]
         if trump_cards:
             winningcard = max(trump_cards)
@@ -95,6 +124,7 @@ class Game:
         ) % 4
 
     def gameround(self):
+        """Conduct a single round of the game."""
         self.cards_on_table.clear()
         self.roundwinner = None
         self.roundwinnerindexoffset = self.current_player_index

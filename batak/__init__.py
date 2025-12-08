@@ -1,3 +1,4 @@
+"""PyBatak - A Python implementation of the Batak card game."""
 from .card import Card as Card
 from .deck import Deck as Deck
 from .player import Player as Player

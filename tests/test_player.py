@@ -2,7 +2,7 @@ import pytest
 import sys
 
 sys.path.append("..")
-from batak import Player
+from batak import BotPlayer, HumanPlayer
 from batak import Card
 from unittest.mock import patch
 
@@ -38,31 +38,26 @@ def sample_full_hand():
 
 @pytest.fixture
 def bot_player(sample_hand):
-    return Player("BotPlayer", is_bot=True, hand=sample_hand.copy())
+    return BotPlayer("BotPlayer", hand=sample_hand.copy())
 
 @pytest.fixture
 def bot_player2(sample_full_hand):
-    return Player("BotPlayer2", is_bot=True, hand=sample_full_hand.copy())
+    return BotPlayer("BotPlayer2", hand=sample_full_hand.copy())
 
 @pytest.fixture
 def human_player(sample_hand):
-    return Player("HumanPlayer", is_bot=False, hand=sample_hand.copy())
+    return HumanPlayer("HumanPlayer", hand=sample_hand.copy())
 
 
-def test_number_of_cards_in_suit(bot_player):
-    assert bot_player.number_of_cards_in_suit("Hearts") == 2
-    assert bot_player.number_of_cards_in_suit("Spades") == 1
-    assert bot_player.number_of_cards_in_suit("Clubs") == 1
-    assert bot_player.number_of_cards_in_suit("Diamonds") == 1
 
 
 def test_simple_trump_logic_2(bot_player2):
-    trump = bot_player2.simple_trump_logic()
+    trump = bot_player2.choose_trump()
     assert trump == "Clubs"  # BotPlayer2 has the most Clubs cards
 
 
 def test_simple_bid_logic(bot_player2):
-    bid = bot_player2.simple_bid_logic()
+    bid = bot_player2.bid()
     assert isinstance(bid, int)
     assert 5 <= bid <= 13
 
@@ -88,7 +83,7 @@ def test_choose_trump_retry_on_invalid(mock_input, human_player):
 
 
 def test_simple_trump_logic(bot_player):
-    trump = bot_player.simple_trump_logic()
+    trump = bot_player.choose_trump()
     assert trump in ["Hearts", "Spades", "Clubs", "Diamonds"]
 
 

@@ -2,7 +2,7 @@ import pytest
 import sys
 
 sys.path.append("..")
-from batak import Game, Player, Card
+from batak import Game, Card, BotPlayer
 from unittest.mock import patch
 
 
@@ -41,7 +41,7 @@ def players():
     player_list = []
     for i, hand in enumerate(hands):
         player_list.append(
-            Player(name=f"Player {i + 1}", is_bot=True, hand=hand.copy())
+            BotPlayer(name=f"Player {i + 1}", hand=hand.copy())
         )
     return player_list
 
@@ -80,6 +80,16 @@ def test_is_play_legal_trump_required(players):
     # Must play trump
     assert game.is_play_legal(card) is False
 
+def test_is_play_legal_trump_required2(players):
+    game = Game(players)
+    game.trump = "Spades"
+    game.cards_on_table = [Card("Clubs", 10)]
+    game.current_player_index = 1
+    players[1].hand = [Card("Spades", 13), Card("Hearts", 2)]
+    card = Card("Spades", 13)
+    # Must play trump
+    assert game.is_play_legal(card) is True
+
 def test_is_play_legal_trump_not_yet_enabled(players):
     game = Game(players)
     game.trump = "Hearts"
@@ -92,8 +102,8 @@ def test_is_play_legal_trump_not_yet_enabled(players):
     assert game.is_play_legal(card) is False
 
 
-@patch("batak.Player.bid", side_effect=[7, 5, 6, 4])
-@patch("batak.Player.choose_trump", return_value="Spades")
+@patch("batak.BotPlayer.bid", side_effect=[7, 5, 6, 4])
+@patch("batak.BotPlayer.choose_trump", return_value="Spades")
 def test_bidding_and_trump_selection(mock_trump, mock_bids, players):
     game = Game(players)
     game.bidding()
@@ -129,7 +139,7 @@ def test_determine_winning_card_no_trump(players):
     assert game.roundwinner == 1  # 'Hearts', 13 wins
 
 
-@patch("batak.Player.play_card", side_effect=lambda table, trump, legal: legal[0])
+@patch("batak.BotPlayer.play_card", side_effect=lambda table, trump, legal: legal[0])
 def test_full_round_simulation(mock_play_card, players):
     game = Game(players)
     game.trump = "Hearts"

@@ -1,7 +1,7 @@
 """Module implementing the core game logic for Batak."""
+from typing import List
 from .card import Card
 from .player import Player
-
 
 class Game:
     """Class representing a Batak game."""
@@ -14,6 +14,10 @@ class Game:
         self.roundwinner = None
         self.roundwinnerindexoffset = 0
 
+    def players_cards_in_suit(self, player: Player, suit: str) -> List[Card]:
+        """Return a list of cards in `player`'s hand that match `suit`."""
+        return [card for card in player.hand if card.suit == suit]
+
     def _can_lead_card(self, player: Player, card: Card) -> bool:
         """Return True if `card` can be led when table is empty.
 
@@ -24,7 +28,7 @@ class Game:
             return True
         # card is trump
         if not self.is_trump_enabled:
-            if len(player.hand) == player.number_of_cards_in_suit(self.trump):
+            if len(player.hand) == len(self.players_cards_in_suit(player, self.trump)):
                 return True
             return False
         return True
@@ -74,10 +78,10 @@ class Game:
 
     def _can_follow_different_suit(self, player: Player, card: Card, leading_suit: str) -> bool:
         """Return True if `card` is legal when it does NOT match the leading suit."""
-        if player.number_of_cards_in_suit(leading_suit) == 0:
+        if len(self.players_cards_in_suit(player, leading_suit)) == 0:
             if card.suit == self.trump:
                 return True
-            if player.number_of_cards_in_suit(self.trump) == 0:
+            if len(self.players_cards_in_suit(player, self.trump)) == 0:
                 return True
             return False
         return False
@@ -131,19 +135,19 @@ class Game:
         player = self.players[self.current_player_index]
         for _ in range(4):
             print("\nCurrent player: " + player.name)
-            print("Cards on table: " + str(self.cards_on_table))
-            print("Player hand: " + str(player.hand))
+            print("Cards on table: " + str([str(card) for card in self.cards_on_table]))
+            print("Player hand: " + str([str(card) for card in player.hand]))
             print("players card options are as follows:")
             legal_cards = [card for card in player.hand if self.is_play_legal(card)]
 
             if len(legal_cards) == 0:
                 print(" !!! ERROR: No legal cards available !!!")
-                print("Player cards are: " + str(player.hand))
-                print("Cards on table are: " + str(self.cards_on_table))
+                print("Player cards are: " + str([str(card) for card in player.hand]))
+                print("Cards on table: " + str([str(card) for card in self.cards_on_table]))
                 print("Trump is: " + str(self.trump))
                 print("Current player is: " + str(player.name))
                 return
-            print("Cards: " + str(legal_cards))
+            print("Cards: " + str([str(card) for card in legal_cards]))
             played_card = player.play_card(self.cards_on_table, self.trump, legal_cards)
             if played_card is None:
                 print(" !!! ERROR: No card played !!!")

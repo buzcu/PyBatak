@@ -71,15 +71,14 @@ if __name__ == "__main__":
         num_games = int(input("Enter number of bot games to simulate: "))
         for _ in range(num_games):
             final_score_array.append(run_bot_game())
-        
         aggregated_scores = {}
-        for score_dict in final_score_array:    
+        for score_dict in final_score_array:
             for name, score in score_dict.items():
                 if name in aggregated_scores:
                     aggregated_scores[name] += score
                 else:
                     aggregated_scores[name] = score
-        print("\nAggregated Scores after {} games:".format(num_games))
+        print(f'\nAggregated Scores after {num_games} games:')
         for name, score in aggregated_scores.items():
             print(f"{name}: {score}")
     else:

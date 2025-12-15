@@ -78,43 +78,43 @@ class Batak:
 
     def _can_follow_different_suit(self, player: Player, card: Card, leading_suit: str) -> bool:
         """Return True if `card` is legal when it does NOT match the leading suit."""
-        
+
         # 1. Player must be void in the leading suit to play a different suit
         if len(self.players_cards_in_suit(player, leading_suit)) > 0:
             return False
 
         # 2. If player plays a trump (Cutting)
         if card.suit == self.trump:
-            # Check for existing trumps on the table
-            trumps_on_table = [c for c in self.cards_on_table if c.suit == self.trump]
-            
-            if not trumps_on_table:
-                return True # First person to cut can play any trump
-                
-            highest_trump_table = max(trumps_on_table)
-            
-            # If the card played beats the table trump, it's legal
-            if card.rank > highest_trump_table.rank:
-                return True
-                
-            # If card is lower, we must check if the player HAS a higher trump they are hiding
-            player_trumps = self.players_cards_in_suit(player, self.trump)
-            highest_trump_hand = max(player_trumps)
-            
-            # If player has a trump that could beat the table, they CANNOT play a lower one.
-            if highest_trump_hand.rank > highest_trump_table.rank:
-                return False
-                
-            # If they can't beat it, playing a lower trump is allowed (undertrumping)
-            return True
+            return self._can_follow_diff_suit_with_trump_card(player, card)
 
         # 3. If player plays a non-trump (discarding)
         # This is only allowed if they have NO trumps OR they are unable to over-trump?
-        # Standard Batak: You must trump if you are void in lead. 
+        # Standard Batak: You must trump if you are void in lead.
         if len(self.players_cards_in_suit(player, self.trump)) > 0:
             # Player has trumps but chose to discard a side suit -> ILLEGAL
             return False
-            
+
+        return True
+
+    def _can_follow_diff_suit_with_trump_card(self, player: Player, card: Card) -> bool:
+        # Check for existing trumps on the table
+        trumps_on_table = [c for c in self.cards_on_table if c.suit == self.trump]
+        if not trumps_on_table:
+            return True # First person to cut can play any trump
+
+        highest_trump_table = max(trumps_on_table)
+
+        # If the card played beats the table trump, it's legal
+        if card.rank > highest_trump_table.rank:
+            return True
+
+        # If card is lower, we must check if the player HAS a higher trump they are hiding
+        player_trumps = self.players_cards_in_suit(player, self.trump)
+        highest_trump_hand = max(player_trumps)
+        # If player has a trump that could beat the table, they CANNOT play a lower one.
+        if highest_trump_hand.rank > highest_trump_table.rank:
+            return False
+        # If they can't beat it, playing a lower trump is allowed (undertrumping)
         return True
 
     def is_play_legal(self, card: Card):

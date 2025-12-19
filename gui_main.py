@@ -1,7 +1,7 @@
 """This module is the attempt at making a gui."""
 import tkinter as tk
 from tkinter import messagebox
-from batak import Deck, Batak, HumanPlayer, BotPlayer
+from batak import Deck, Batak, HumanPlayer, BotPlayer, RandomPlayStrategies, RuleBasedPlayStrategies, HighCardPlayStrategies
 from batak.card import Card
 from image_storage import CardFaces
 
@@ -85,6 +85,7 @@ class BatakTableUI():
         self.root.rowconfigure(0, weight=1)
         self.card_library = CardFaces()
         self.card_library.load_images()
+        self.drawn_cards = []
         self.build_ui()
         # self.draw_card(Card(suit="Hearts", rank=14), 50, 50)
         self.start_game()
@@ -121,13 +122,34 @@ class BatakTableUI():
 
     def draw_card(self, card, x, y):
             """Draws a visual marker where a card might go."""
-            myimg = self.card_library.get_image(card)
+            card_image = self.card_library.get_image(card)
             self.table.create_image(
                 x, y,
-                image=myimg, 
+                image=card_image, 
                 anchor='nw'
             )
-            self.canvas_image2 = myimg
+            self.drawn_cards.append(card_image)
+
+    def draw_back_card_vertical(self, x, y):
+            """Draws a visual marker where a card back might go."""
+            back_image = self.card_library.get_back_image_vertical()
+            self.table.create_image(
+                x, y,
+                image=back_image, 
+                anchor='nw'
+            )
+            self.drawn_cards.append(back_image)
+
+    def draw_back_card_horizontal(self, x, y):
+            """Draws a visual marker where a card back might go."""
+            back_image = self.card_library.get_back_image_horizontal()
+            self.table.create_image(
+                x, y,
+                image=back_image, 
+                anchor='nw'
+            )
+            self.drawn_cards.append(back_image)
+
     def start_game(self):
         """
         Docstring for start_game
@@ -140,13 +162,12 @@ class BatakTableUI():
         self.game = Batak(
             players=[
                 self.player,
-                BotPlayer(name="John Malkovich", hand=deck.deal(13)),
-                BotPlayer(name="Yoko Ono", hand=deck.deal(13)),
-                BotPlayer(name="Kanye West", hand=deck.deal(13)),
+                BotPlayer(name="John Malkovich", hand=deck.deal(13), position="North", strategy=RandomPlayStrategies()),
+                BotPlayer(name="Yoko Ono", hand=deck.deal(13), position="East", strategy=RuleBasedPlayStrategies()),
+                BotPlayer(name="Kanye West", hand=deck.deal(13), position="West", strategy=HighCardPlayStrategies()),
             ]
         )
-        for card in self.player.hand:
-            self.draw_card(card, 10 + self.player.hand.index(card)*75, 400)
+        self.draw_cards()
 
     def draw_cards(self):
         """
@@ -158,6 +179,15 @@ class BatakTableUI():
             self.draw_card(card, 10 + self.player.hand.index(card)*75, 400)
         for bot in self.game.players:
             if bot is not self.player:
+                if bot.position == "North":
+                    self.draw_north_bot(bot)
+                elif bot.position == "East":
+                    # Draw east bot cards
+                    pass
+                elif bot.position == "West":
+                    # Draw west bot cards
+                    pass
+                
                  # Draw bot cards 
                  # todo: add sitting positions to bot players then create draw functions which 
                  # draw card backs on those positions
@@ -170,7 +200,7 @@ class BatakTableUI():
         :param bot: Description
         """
         for card in bot.hand:
-            self.draw_card(card, 400 + bot.hand.index(card)*30, 10)
+            self.draw_back_card_vertical(10 + bot.hand.index(card)*77, 10)
 # -----------------------------------------
 # Launch welcome screen
 # -----------------------------------------

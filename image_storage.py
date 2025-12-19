@@ -4,11 +4,13 @@ from dataclasses import dataclass, field
 from batak import Card
 from PIL import Image, ImageTk
 
-@dataclass(order=True, frozen=True)
+@dataclass(order=True, frozen=False)
 class CardFaces:
     """Class to manage loading and retrieving card images."""
     image_directory = "cards/"
     images: dict[Card, ImageTk.PhotoImage] = field(default_factory=dict)
+    back_image_vertical: ImageTk.PhotoImage = field(init=False, default=None)
+    back_image_horizontal: ImageTk.PhotoImage = field(init=False, default=None)
 
     def load_images(self, image_directory: str = None):
         """Load card images from the specified directory."""
@@ -28,14 +30,14 @@ class CardFaces:
                 except Exception as e:
                     print(f"Error loading image for {card}: {e}")
         try:
-            back_image_vertical = Image.open(f"{image_directory}cardbackdesignvertical_small.png")
-            back_image_horizontal = Image.open(f"{image_directory}cardbackdesignhorizontal_small.png")
-            back_image_vertical = back_image_vertical.convert("RGBA")
-            back_image_horizontal = back_image_horizontal.convert("RGBA")
-            back_photo_vertical = ImageTk.PhotoImage(back_image_vertical)
-            back_photo_horizontal = ImageTk.PhotoImage(back_image_horizontal)
-            self.back_image_vertical = back_photo_vertical
-            self.back_image_horizontal = back_photo_horizontal
+            back_image_v = Image.open(f"{image_directory}cardbackdesignvertical_small.png")
+            back_image_h = Image.open(f"{image_directory}cardbackdesignhorizontal_small.png")
+            back_image_v = back_image_v.convert("RGBA")
+            back_image_h = back_image_h.convert("RGBA")
+            back_photo_v = ImageTk.PhotoImage(back_image_v)
+            back_photo_h = ImageTk.PhotoImage(back_image_h)
+            self.back_image_vertical = back_photo_v
+            self.back_image_horizontal = back_photo_h
         except Exception as e:
             print(f"Error loading back card images: {e}")
 

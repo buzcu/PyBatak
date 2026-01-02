@@ -1,8 +1,9 @@
 """Module for managing card images in a GUI application."""
 import tkinter as tk
 from dataclasses import dataclass, field
-from batak import Card
 from PIL import Image, ImageTk
+from batak import Card
+
 
 @dataclass(order=True, frozen=False)
 class CardFaces:
@@ -44,11 +45,11 @@ class CardFaces:
     def get_image(self, card_obj: object) -> tk.PhotoImage:
         """Retrieves the image using the Card object itself."""
         return self.images.get(card_obj)
-    
+
     def get_back_image_vertical(self) -> tk.PhotoImage:
         """Retrieves the back image of the card."""
         return self.back_image_vertical
-    
+
     def get_back_image_horizontal(self) -> tk.PhotoImage:
         """Retrieves the back image of the card."""
         return self.back_image_horizontal

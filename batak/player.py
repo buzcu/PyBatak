@@ -72,7 +72,8 @@ class HumanPlayer(Player):
 class BotPlayer(Player):
     """Class representing a bot player in the Batak game."""
     def __init__(self, name, hand: Optional[List[Card]] = None,
-                 strategy: Optional[PlayStrategies] = RuleBasedPlayStrategies(), position: Optional[str] = None):
+                 strategy: Optional[PlayStrategies] = RuleBasedPlayStrategies(),
+                 position: Optional[str] = None):
         super().__init__(name, is_bot=True, hand=hand)
         self.strategy = strategy
         self.position = position

@@ -30,6 +30,6 @@ class Card:
 
     def __str__(self):
         return f"{self.FACE_CARD_NAMES.get(self.rank, self.rank)} of {self.suit}"
-    
+
     def __repr__(self):
         return f"{self.suit} {self.rank}.png"

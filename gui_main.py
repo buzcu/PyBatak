@@ -11,8 +11,8 @@ from image_storage import CardFaces
 # -----------------------------------------2
 class WelcomeUI:
     """welcome screen for the Batak game."""
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, welcome_root):
+        self.root = welcome_root
         self.root.title("Batak Game - Welcome")
         self.root.geometry("600x500")
         self.root.configure(bg="#2e2e2e")
@@ -76,20 +76,20 @@ class WelcomeUI:
 class BatakTableUI():
     """Main game table UI for Batak."""
     def __init__(self, root):
-        self.root = root
-        self.root.title("Batak Game")
-        self.root.minsize(1000,600)
-        self.root.configure(bg="#1e1e1e")
+        self.tkroot = root
+        self.tkroot.title("Batak Game")
+        self.tkroot.minsize(1000,600)
+        self.tkroot.configure(bg="#1e1e1e")
         # 2. Configure grid weights so the canvas expands with the window
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
+        self.tkroot.columnconfigure(0, weight=1)
+        self.tkroot.rowconfigure(0, weight=1)
         self.card_library = CardFaces()
         self.card_library.load_images()
         self.drawn_cards = []
         self.build_ui()
         # self.draw_card(Card(suit="Hearts", rank=14), 50, 50)
         self.start_game()
-        self.root.mainloop()
+        self.tkroot.mainloop()
 
     def build_ui(self):
         """
@@ -101,14 +101,14 @@ class BatakTableUI():
         # 3. Create the "Game Table" using a Canvas
         # We use a dark green color to mimic a classic card table
         self.table = tk.Canvas(
-            self.root,
+            self.tkroot,
             bg="#2e7d32",
             highlightthickness=0
         )
         self.table.grid(row=0, column=0, sticky="nsew")
 
         # 4. Add a status bar or control panel at the bottom
-        self.controls = tk.Frame(self.root, bg="#1b5e20", height=50)
+        self.controls = tk.Frame(self.tkroot, bg="#1b5e20", height=50)
         self.controls.grid(row=1, column=0, sticky="ew")
         global PLAYER_NAME
         self.label = tk.Label(
@@ -198,7 +198,8 @@ class BatakTableUI():
                     # Draw west bot cards
                     pass
                  # Draw bot cards
-                 # dont forget to add sitting positions to bot players then create draw functions which
+                 # dont forget to add sitting positions to
+                 # bot players then create draw functions which
                  # draw card backs on those positions
 
     def draw_north_bot(self, bot):

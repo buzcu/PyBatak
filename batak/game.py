@@ -137,10 +137,10 @@ class Batak:
         max_bid_index = bids.index(max(bids))
 
         self.trump = self.players[max_bid_index].choose_trump()
-        print(
-            "Trump: " + self.trump + " by player: " + self.players[max_bid_index].name
-        )
+        result_text ="Trump: " + self.trump + " by player: " + self.players[max_bid_index].name
+        print(result_text)
         self.current_player_index = max_bid_index  # bid winner starts first
+        return result_text
 
     def determine_winning_card(self):
         """Determine the winning card and the round winner."""

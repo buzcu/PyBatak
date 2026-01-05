@@ -30,14 +30,22 @@ class HumanPlayer(Player):
     """Class representing a human player in the Batak game."""
     def __init__(self, name, hand: Optional[List[Card]] = None):
         super().__init__(name, is_bot=False, hand=hand)
+        self.order_hand()
         self.print_hand()
+        self.position = "South"
+        self.player_bid = None
+        self.chosen_trump = None
 
     def bid(self) -> int:
         """Get the player's bid for the round."""
+        if self.player_bid is not None:
+            return self.player_bid
         return int(input(f"{self.name}, enter your bid: "))
 
     def choose_trump(self):
         """Choose the trump suit for the round."""
+        if self.chosen_trump is not None:
+            return self.chosen_trump
         trump_suit = input(
             f"{self.name}, choose a trump suit (Hearts, Diamonds, Clubs, Spades): "
         )
@@ -68,6 +76,17 @@ class HumanPlayer(Player):
         chosen = legal_cards[choice]
         self.hand.remove(chosen)
         return chosen
+    def order_hand(self):
+        """Order the player's hand by rank."""
+        clubs = [card for card in self.hand if card.suit == "Clubs"]
+        diamonds = [card for card in self.hand if card.suit == "Diamonds"]
+        hearts = [card for card in self.hand if card.suit == "Hearts"]
+        spades = [card for card in self.hand if card.suit == "Spades"]
+        clubs.sort()
+        diamonds.sort()
+        hearts.sort()
+        spades.sort()
+        self.hand = clubs + diamonds + spades + hearts
 
 class BotPlayer(Player):
     """Class representing a bot player in the Batak game."""
